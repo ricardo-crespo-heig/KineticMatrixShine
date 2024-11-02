@@ -91,10 +91,41 @@ void loop() {
 #define NUM_CYCLE     10
 #define NUM_PULSES    6400
 
+#define ROWS          10
+#define NBR_MOTORS    1
+
 volatile int cycleCount = NUM_CYCLE;
 volatile int pulseCount = 0;
 volatile bool direction = LOW;
 volatile bool stepState = LOW;
+
+const int tbSteps[ROWS][NBR_MOTORS] =
+{
+  {320},
+  {640},
+  {320},
+  {640},
+  {320},
+  {640},
+  {320},
+  {640},
+  {320},
+  {640}  
+};
+
+/*const int tbSteps[ROWS][NBR_MOTORS] =
+{
+  {640},
+  {640},
+  {640},
+  {640},
+  {640},
+  {640},
+  {640},
+  {640},
+  {640},
+  {640}  
+};*/
 
 void setup() {
 
@@ -147,11 +178,14 @@ ISR(TIMER3_COMPA_vect)
 {
     // Code à exécuter toutes les 100 ms
     //digitalWrite(STEPA4,!digitalRead(STEPA4));
+
+    pulseCount = tbSteps[cycleCount][0]*2;
+            
     // Si le nombre de pulses est atteint, change la direction
     if (cycleCount >= NUM_CYCLE) 
     {
         cycleCount = 0;
-        pulseCount = 0;
+
         // Inverse la direction
         direction = !direction;
         digitalWrite(DIRA1, direction);
@@ -174,7 +208,7 @@ ISR(TIMER1_COMPA_vect)
 
     // Code à exécuter toutes les 50 µs
     //digitalWrite(STEPA1,!digitalRead(STEPA1));
-    if(pulseCount < (NUM_PULSES * 2))
+    if(pulseCount > 0)
     {
         // Alterne l'état du step
         stepState = !stepState;
@@ -186,7 +220,7 @@ ISR(TIMER1_COMPA_vect)
         digitalWrite(STEPA4, stepState);
     }
 
-    pulseCount++;
+    pulseCount--;
 }
 
 void loop() {

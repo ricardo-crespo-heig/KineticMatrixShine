@@ -11,20 +11,23 @@
 
 void InitIO()
 {
-    pinMode(CMDU,INPUT);
-    pinMode(STEP1,OUTPUT); 
-    pinMode(STEP2,OUTPUT); 
-    pinMode(STEP3,OUTPUT); 
-    pinMode(STEP4,OUTPUT); 
-    pinMode(STEPU,OUTPUT); 
-    pinMode(DIR1,OUTPUT);
-    pinMode(DIR2,OUTPUT);
-    pinMode(DIR3,OUTPUT);
-    pinMode(DIR4,OUTPUT);
-    pinMode(DIRU,OUTPUT);
-    pinMode(SLEEP1, OUTPUT);
-    pinMode(SLEEP2, OUTPUT);
-    pinMode(SLEEP3, OUTPUT);
-    pinMode(SLEEP4, OUTPUT);
-    pinMode(SLEEPU, OUTPUT);
+    //pinMode(CMDU,INPUT);
+    pinMode(STEPA1,OUTPUT); 
+    pinMode(STEPA2,OUTPUT); 
+    pinMode(STEPA3,OUTPUT); 
+    pinMode(STEPA4,OUTPUT); 
+
+ 
+    pinMode(DIRA1,OUTPUT);
+    pinMode(DIRA2,OUTPUT);
+    pinMode(DIRA3,OUTPUT);
+    pinMode(DIRA4,OUTPUT);
+
+
+    pinMode(SLEEPA1, OUTPUT);
+    pinMode(SLEEPA2, OUTPUT);
+    pinMode(SLEEPA3, OUTPUT);
+    pinMode(SLEEPA4, OUTPUT);
+
+
 }

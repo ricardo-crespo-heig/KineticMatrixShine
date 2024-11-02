@@ -21,17 +21,17 @@ void setup()
 void loop() 
 {
  
-    //TestMotors();
+    TestMotors();
     //CalibDriver();
     
-    if(digitalRead(CMDU))
+    /*if(digitalRead(CMDU))
     {
         TestMotorsU();
     }
     else
     {
         CalibDriverU();
-    }
+    }*/
 
 
 }

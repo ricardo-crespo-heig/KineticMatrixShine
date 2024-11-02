@@ -10,18 +10,22 @@
 #include "TESTMOTORS.h"
 #include "IO.h"
 
+//#define PULSES  12800
+#define PULSES  6400
+#define DELAY   1
+
 void TestMotors()
 {
-    digitalWrite(DIR1,HIGH); // Enables the motor to move in a particular direction
-    digitalWrite(DIR2,HIGH);
-    digitalWrite(DIR3,HIGH);
-    digitalWrite(DIR4,HIGH);
-    digitalWrite(SLEEP1, HIGH);
-    digitalWrite(SLEEP2, HIGH);
-    digitalWrite(SLEEP3, HIGH);
-    digitalWrite(SLEEP4, HIGH);
+    digitalWrite(DIRA1,HIGH); // Enables the motor to move in a particular direction
+    digitalWrite(DIRA2,HIGH);
+    digitalWrite(DIRA3,HIGH);
+    digitalWrite(DIRA4,HIGH);
+    digitalWrite(SLEEPA1, HIGH);
+    digitalWrite(SLEEPA2, HIGH);
+    digitalWrite(SLEEPA3, HIGH);
+    digitalWrite(SLEEPA4, HIGH);
     // Makes 200 pulses for making one full cycle rotation
-    for(int x = 0; x < 400; x++) {
+    for(int x = 0; x < PULSES; x++) {
         //digitalWrite(stepPin,HIGH); 
         //analogWrite(STEP1, 500);
         //analogWrite(STEP2, 500);
@@ -34,53 +38,53 @@ void TestMotors()
         //analogWrite(STEP3, 0);
         //analogWrite(STEP4, 0);
         //delayMicroseconds(500); 
-        digitalWrite(STEP1,HIGH);
-        digitalWrite(STEP2,HIGH);
-        digitalWrite(STEP3,HIGH);
-        digitalWrite(STEP4,HIGH);
-        delayMicroseconds(500);
-        digitalWrite(STEP1,LOW);
-        digitalWrite(STEP2,LOW);
-        digitalWrite(STEP3,LOW);
-        digitalWrite(STEP4,LOW);
-        delayMicroseconds(500);
+        digitalWrite(STEPA1,HIGH);
+        digitalWrite(STEPA2,HIGH);
+        digitalWrite(STEPA3,HIGH);
+        digitalWrite(STEPA4,HIGH);
+        delayMicroseconds(DELAY);
+        digitalWrite(STEPA1,LOW);
+        digitalWrite(STEPA2,LOW);
+        digitalWrite(STEPA3,LOW);
+        digitalWrite(STEPA4,LOW);
+        delayMicroseconds(DELAY);
     }
-    digitalWrite(SLEEP1, LOW);
-    digitalWrite(SLEEP2, LOW);
-    digitalWrite(SLEEP3, LOW);
-    digitalWrite(SLEEP4, LOW);
+    digitalWrite(SLEEPA1, LOW);
+    digitalWrite(SLEEPA2, LOW);
+    digitalWrite(SLEEPA3, LOW);
+    digitalWrite(SLEEPA4, LOW);
     
     delay(2000); // One second delay
 
-    digitalWrite(DIR1,LOW); // Enables the motor to move in a particular direction
-    digitalWrite(DIR2,LOW);
-    digitalWrite(DIR3,LOW);
-    digitalWrite(DIR4,LOW);
-    digitalWrite(SLEEP1, HIGH);
-    digitalWrite(SLEEP2, HIGH);
-    digitalWrite(SLEEP3, HIGH);
-    digitalWrite(SLEEP4, HIGH);
+    digitalWrite(DIRA1,LOW); // Enables the motor to move in a particular direction
+    digitalWrite(DIRA2,LOW);
+    digitalWrite(DIRA3,LOW);
+    digitalWrite(DIRA4,LOW);
+    digitalWrite(SLEEPA1, HIGH);
+    digitalWrite(SLEEPA2, HIGH);
+    digitalWrite(SLEEPA3, HIGH);
+    digitalWrite(SLEEPA4, HIGH);
     // Makes 400 pulses for making two full cycle rotation
-    for(int x = 0; x < 400; x++) {
-        digitalWrite(STEP1,HIGH);
-        digitalWrite(STEP2,HIGH);
-        digitalWrite(STEP3,HIGH);
-        digitalWrite(STEP4,HIGH);
-        delayMicroseconds(500);
-        digitalWrite(STEP1,LOW);
-        digitalWrite(STEP2,LOW);
-        digitalWrite(STEP3,LOW);
-        digitalWrite(STEP4,LOW);
-        delayMicroseconds(500);
+    for(int x = 0; x < PULSES; x++) {
+        digitalWrite(STEPA1,HIGH);
+        digitalWrite(STEPA2,HIGH);
+        digitalWrite(STEPA3,HIGH);
+        digitalWrite(STEPA4,HIGH);
+        delayMicroseconds(DELAY);
+        digitalWrite(STEPA1,LOW);
+        digitalWrite(STEPA2,LOW);
+        digitalWrite(STEPA3,LOW);
+        digitalWrite(STEPA4,LOW);
+        delayMicroseconds(DELAY);
     }
-    digitalWrite(SLEEP1, LOW);
-    digitalWrite(SLEEP2, LOW);
-    digitalWrite(SLEEP3, LOW);
-    digitalWrite(SLEEP4, LOW);
+    digitalWrite(SLEEPA1, LOW);
+    digitalWrite(SLEEPA2, LOW);
+    digitalWrite(SLEEPA3, LOW);
+    digitalWrite(SLEEPA4, LOW);
     delay(2000);
 }
 
-void TestMotorsU()
+/*void TestMotorsU()
 {
     digitalWrite(DIRU,HIGH); // Enables the motor to move in a particular direction
     digitalWrite(SLEEPU, HIGH);
@@ -106,17 +110,17 @@ void TestMotorsU()
     }
     digitalWrite(SLEEPU, LOW);
     delay(2000);
-}
+}*/
 
 void CalibDriver()
 {
-    digitalWrite(SLEEP1, HIGH);
-    digitalWrite(SLEEP2, HIGH);
-    digitalWrite(SLEEP3, HIGH);
-    digitalWrite(SLEEP4, HIGH);
+    digitalWrite(SLEEPA1, HIGH);
+    digitalWrite(SLEEPA2, HIGH);
+    digitalWrite(SLEEPA3, HIGH);
+    digitalWrite(SLEEPA4, HIGH);
 }
 
-void CalibDriverU()
+/*void CalibDriverU()
 {
     digitalWrite(SLEEPU, HIGH);
-}
+}*/

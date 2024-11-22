@@ -98,6 +98,7 @@ volatile int cycleCount = NUM_CYCLE;
 volatile int pulseCount = 0;
 volatile bool direction = LOW;
 volatile bool stepState = LOW;
+volatile bool flagInter = false;
 
 const int tbSteps[ROWS][NBR_MOTORS] =
 {
@@ -134,13 +135,13 @@ void setup() {
     cli();  // Désactive les interruptions globales
     
     // Configuration de Timer3 pour une interruption toutes les 100 ms
-    TCCR3A = 0;
+    /*TCCR3A = 0;
     TCCR3B = 0;
     TCNT3 = 0;  // Réinitialise le compteur
     OCR3A = 24999;  // Valeur pour 100 ms (à 16 MHz avec un prédiviseur de 64)
     TCCR3B |= (1 << WGM32);  // Mode CTC (Clear Timer on Compare Match)
     TCCR3B |= (1 << CS31) | (1 << CS30);  // Prédivision par 64
-    TIMSK3 |= (1 << OCIE3A);  // Active l'interruption pour Timer3
+    TIMSK3 |= (1 << OCIE3A);  // Active l'interruption pour Timer3*/
 
     // Configuration de Timer1 pour une interruption toutes les 10 µs
     /*TCCR1A = 0;
@@ -171,41 +172,15 @@ void setup() {
     digitalWrite(SLEEPA2, HIGH);
     digitalWrite(SLEEPA3, HIGH);
     digitalWrite(SLEEPA4, HIGH);
-}
-
-// Interruption pour Timer3 (100 ms)
-ISR(TIMER3_COMPA_vect) 
-{
-    // Code à exécuter toutes les 100 ms
-    //digitalWrite(STEPA4,!digitalRead(STEPA4));
 
     pulseCount = tbSteps[cycleCount][0]*2;
-            
-    // Si le nombre de pulses est atteint, change la direction
-    if (cycleCount >= NUM_CYCLE) 
-    {
-        cycleCount = 0;
-
-        // Inverse la direction
-        direction = !direction;
-        digitalWrite(DIRA1, direction);
-        digitalWrite(DIRA2, direction);
-        digitalWrite(DIRA3, direction);
-        digitalWrite(DIRA4, direction);
-
-        // Réinitialise le compteur de pulses pour la prochaine rotation
-        cycleCount = 0;
-    }
-    else
-    {
-        cycleCount++;
-    }
 }
 
 // Interruption pour Timer1 (50 µs)
 ISR(TIMER1_COMPA_vect) 
 {
-
+    static uint16_t countInter = 0;
+    
     // Code à exécuter toutes les 50 µs
     //digitalWrite(STEPA1,!digitalRead(STEPA1));
     if(pulseCount > 0)
@@ -219,7 +194,35 @@ ISR(TIMER1_COMPA_vect)
         digitalWrite(STEPA3, stepState);
         digitalWrite(STEPA4, stepState);
     }
+    
+    // 2000 * 50 µs = 100 ms
+    if (countInter >= 2000) 
+    {  
+        countInter = 0;       // Réinitialise le compteur
+        flagInter != flagInter;           // Signale que 100 ms sont écoulées
 
+        // Si le nombre de pulses est atteint, change la direction
+        if (cycleCount >= NUM_CYCLE) 
+        {
+            cycleCount = 0;
+    
+            // Inverse la direction
+            direction = !direction;
+            digitalWrite(DIRA1, direction);
+            digitalWrite(DIRA2, direction);
+            digitalWrite(DIRA3, direction);
+            digitalWrite(DIRA4, direction);
+    
+            // Réinitialise le compteur de pulses pour la prochaine rotation
+            cycleCount = 0;
+        }
+        else
+        {
+            cycleCount++;
+            pulseCount = tbSteps[cycleCount][0]*2;
+        }
+    }
+    countInter++;
     pulseCount--;
 }
 

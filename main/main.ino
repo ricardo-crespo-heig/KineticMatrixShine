@@ -94,11 +94,20 @@ void loop() {
 #define ROWS          10
 #define NBR_MOTORS    1
 
+#define BUFFER_SIZE   2000
+
 volatile int cycleCount = NUM_CYCLE;
 volatile int pulseCount = 0;
 volatile bool direction = LOW;
 volatile bool stepState = LOW;
 volatile bool flagInter = false;
+
+int currentIndex = 0;
+int error = 0;
+int delta = 0;
+int threshold = BUFFER_SIZE;
+
+uint8_t buffer[BUFFER_SIZE];
 
 const int tbSteps[ROWS][NBR_MOTORS] =
 {
@@ -130,6 +139,7 @@ const int tbSteps[ROWS][NBR_MOTORS] =
 
 void setup() {
 
+    //Serial.begin(9600); // Initialiser la communication série
     InitIO();
       
     cli();  // Désactive les interruptions globales
@@ -166,14 +176,35 @@ void setup() {
     TIMSK1 |= (1 << OCIE1A);
 
 
-    sei();  // Active les interruptions globales
 
     digitalWrite(SLEEPA1, HIGH);
     digitalWrite(SLEEPA2, HIGH);
     digitalWrite(SLEEPA3, HIGH);
     digitalWrite(SLEEPA4, HIGH);
 
-    pulseCount = tbSteps[cycleCount][0]*2;
+    pulseCount = tbSteps[0][0]*2;
+    initBresenham(tbSteps[0][0]*2);
+
+    // Optionnel : réinitialiser le buffer
+    for (int i = 0; i < BUFFER_SIZE; i++) 
+    {
+        buffer[i] = 0;
+    }
+    
+    for(int i = 0; i < BUFFER_SIZE; i++)
+    {
+        calculateBresenhamPoint(buffer);
+    }
+
+
+    sei();  // Active les interruptions globales
+    
+    // Envoyer le tableau calculé sur la console
+    //Serial.println("Buffer Calculated:");
+    //for (int i = 0; i < BUFFER_SIZE; i++) {
+    //    Serial.print(buffer[i]);
+    //    Serial.print((i % 50 == 49) ? '\n' : ' '); // Sauter une ligne toutes les 50 cases
+    //}
 }
 
 // Interruption pour Timer1 (50 µs)
@@ -181,7 +212,7 @@ ISR(TIMER1_COMPA_vect)
 {
     static uint16_t countInter = 0;
     
-    // Code à exécuter toutes les 50 µs
+    /*// Code à exécuter toutes les 50 µs
     //digitalWrite(STEPA1,!digitalRead(STEPA1));
     if(pulseCount > 0)
     {
@@ -222,10 +253,72 @@ ISR(TIMER1_COMPA_vect)
             pulseCount = tbSteps[cycleCount][0]*2;
         }
     }
+
+    pulseCount--;*/
+    
+    //digitalWrite(STEPA1, stepState);
+    //stepState = !stepState;
+    //Serial.print(buffer[countInter]);
+    if(buffer[countInter] == 1)
+    {
+        //Serial.print("Y\n");
+        // Alterne l'état du step
+        stepState = !stepState;
+        
+        // Applique cet état sur les broches de step
+        digitalWrite(STEPA1, stepState);
+        //digitalWrite(STEPA2, stepState);
+        //digitalWrite(STEPA3, stepState);
+        //digitalWrite(STEPA4, stepState);
+    }
+    else
+    {
+          //Serial.print("N\n");
+    }
+    
     countInter++;
-    pulseCount--;
+    
+    if(countInter >= (BUFFER_SIZE))
+    {
+        countInter = 0;
+        // Inverse la direction
+        //direction = !direction;
+        //digitalWrite(DIRA1, direction);
+        //digitalWrite(DIRA2, direction);
+        //digitalWrite(DIRA3, direction);
+        //digitalWrite(DIRA4, direction);
+    }
+}
+
+void initBresenham(int totalSteps) 
+{
+    currentIndex = 0;
+    error = 0;
+    delta = totalSteps;
+    threshold = BUFFER_SIZE;
+}
+
+bool calculateBresenhamPoint(uint8_t* buffer) {
+    if (currentIndex < BUFFER_SIZE) {
+        error += delta;
+        if (error >= threshold) {
+            buffer[currentIndex] = 1;
+            error -= threshold;
+        } else {
+            buffer[currentIndex] = 0;
+        }
+
+        currentIndex++;
+
+        // Retourne `false` si le calcul n'est pas terminé
+        return false;
+    }
+
+    // Retourne `true` une fois terminé
+    return true;
 }
 
 void loop() {
     // Code principal, qui sera exécuté entre les interruptions
+
 }

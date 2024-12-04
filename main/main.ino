@@ -294,7 +294,16 @@ ISR(TIMER1_COMPA_vect)
 
         
         // Applique cet état sur les broches de step
-        digitalWrite(STEPA1, stepState);
+        PORTH = (PORTH & ~(1 << 6)) | (stepState << 6);
+
+        /*if (stepState) {
+            PORTB |= (1 << STEPA1_BIT);  // Mettre à HIGH
+        } else {
+            PORTB &= ~(1 << STEPA1_BIT); // Mettre à LOW
+        }*/
+
+        
+        //digitalWrite(STEPA1, stepState);
         //digitalWrite(STEPA2, stepState);
         //digitalWrite(STEPA3, stepState);
         //digitalWrite(STEPA4, stepState);

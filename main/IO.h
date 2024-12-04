@@ -69,6 +69,9 @@
 #define SLEEPD3 48
 #define SLEEPD4 42
 
+#define STEPA1_BIT  1
+
+
 extern void InitIO(void);
 
 #endif

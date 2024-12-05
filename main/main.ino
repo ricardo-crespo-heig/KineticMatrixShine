@@ -100,7 +100,7 @@ volatile int cycleCount = NUM_CYCLE;
 volatile int pulseCount = 0;
 volatile bool direction = LOW;
 volatile bool stepState = LOW;
-volatile bool flagInter = false;
+volatile bool flagInter = true;
 volatile bool oneTime = true;
 uint16_t countInterCycle = 0;
     
@@ -115,7 +115,7 @@ uint8_t buffer1[BUFFER_SIZE];
 
 const int tbSteps[ROWS][NBR_MOTORS] =
 {
-  {50},
+  {1000},
   {50},
   {50},
   {50},
@@ -158,7 +158,7 @@ const int tbSteps1[ROWS][NBR_MOTORS] =
 
 void setup() {
 
-    //Serial.begin(9600); // Initialiser la communication série
+    //Serial.begin(250000); // Initialiser la communication série
     InitIO();
       
     cli();  // Désactive les interruptions globales
@@ -326,13 +326,31 @@ ISR(TIMER1_COMPA_vect)
         //digitalWrite(DIRA3, direction);
         //digitalWrite(DIRA4, direction);
         oneTime = true;
-        flagInter != flagInter;           // Signale que 100 ms sont écoulées
+        flagInter = !flagInter;           // Signale que 100 ms sont écoulées
         
         if (flagInter) {
             readBuffer = buffer1; // Pointe sur le second buffer
         } else {
             readBuffer = buffer;  // Pointe sur le premier buffer
         }
+        // Envoyer le tableau calculé sur la console
+        /*Serial.println("FLAG " + String(flagInter));
+        Serial.println("Buffer Calculated " + String(countInterCycle) + " : ");
+        Serial.println("Buffer Calculated POINTEUR :");
+        for (int i = 0; i < BUFFER_SIZE; i++) {
+            Serial.print(readBuffer[i]);
+            Serial.print((i % 50 == 49) ? '\n' : ' '); // Sauter une ligne toutes les 50 cases
+        }
+        Serial.println("Buffer Calculated BUFFER :");
+        for (int i = 0; i < BUFFER_SIZE; i++) {
+            Serial.print(buffer[i]);
+            Serial.print((i % 50 == 49) ? '\n' : ' '); // Sauter une ligne toutes les 50 cases
+        }
+        Serial.println("Buffer Calculated BUFFER1 :");
+        for (int i = 0; i < BUFFER_SIZE; i++) {
+            Serial.print(buffer1[i]);
+            Serial.print((i % 50 == 49) ? '\n' : ' '); // Sauter une ligne toutes les 50 cases
+        }*/
     }
 
     if(countInterCycle >= NUM_CYCLE)
@@ -413,24 +431,25 @@ void loop() {
       }
     }*/
 
-    if (oneTime) {
-    oneTime = false;
-    uint8_t* activeBuffer = flagInter ? buffer : buffer1;
+    if (oneTime) 
+    {
+        oneTime = false;
+        uint8_t* activeBuffer = flagInter ? buffer : buffer1;
 
-    initBresenham(tbSteps[countInterCycle][0] * 2);
+        initBresenham(tbSteps[countInterCycle][0] * 2);
 
-    for (int i = 0; i < BUFFER_SIZE; i++) {
-        calculateBresenhamPoint(activeBuffer);
+        for (int i = 0; i < BUFFER_SIZE; i++) {
+            calculateBresenhamPoint(activeBuffer);
+        }
+
+        // Affichage
+        //Serial.println("Buffer Calculated " + String(countInterCycle) + " : ");
+        //Serial.println("Val " + String(tbSteps[countInterCycle][0] * 2));
+        //for (int i = 0; i < BUFFER_SIZE; i++) {
+        //    Serial.print(activeBuffer[i]);
+        //    Serial.print((i % 50 == 49) ? '\n' : ' ');
+        //}
     }
-
-    // Affichage
-    //Serial.println("Buffer Calculated " + String(countInterCycle) + " : ");
-    //Serial.println("Val " + String(tbSteps[countInterCycle][0] * 2));
-    //for (int i = 0; i < BUFFER_SIZE; i++) {
-    //    Serial.print(activeBuffer[i]);
-    //    Serial.print((i % 50 == 49) ? '\n' : ' ');
-    //}
-}
 
 
 

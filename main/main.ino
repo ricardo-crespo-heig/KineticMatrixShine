@@ -88,20 +88,21 @@ void loop() {
 
 */
 
-#define NUM_CYCLE     10
+//#define NUM_CYCLE     10
 #define NUM_PULSES    6400
 
-#define ROWS          10
+#define ROWS          40
 #define NBR_MOTORS    1
 
 #define BUFFER_SIZE   2000
 
-volatile int cycleCount = NUM_CYCLE;
+volatile int cycleCount = ROWS;
 volatile int pulseCount = 0;
 volatile bool direction = LOW;
 volatile bool stepState = LOW;
 volatile bool flagInter = true;
 volatile bool oneTime = true;
+volatile bool dirCW = true;
 uint16_t countInterCycle = 0;
     
 int currentIndex = 0;
@@ -113,18 +114,62 @@ uint8_t *readBuffer;
 uint8_t buffer[BUFFER_SIZE];
 uint8_t buffer1[BUFFER_SIZE];
 
-const int tbSteps[ROWS][NBR_MOTORS] =
+/*const int tbSteps[ROWS][NBR_MOTORS] =
 {
-  {1000},
   {50},
   {50},
   {50},
-  {1000},
-  {1000},
+  {50},
+  {-1000},
+  {-1000},
   {50},
   {50},
   {50},
   {50}  
+};*/
+
+const int tbSteps[ROWS][NBR_MOTORS] =
+{
+  {50},
+  {50},
+  {50},
+  {50},
+  {1000},
+  {1000},
+  {50},
+  {50},
+  {50},
+  {50},  
+  {50},
+  {50},
+  {50},
+  {600},
+  {600},
+  {50},
+  {50},
+  {50},
+  {50},
+  {50},  
+  {50},
+  {50},
+  {50},
+  {50},
+  {-1000},
+  {-1000},
+  {50},
+  {50},
+  {50},
+  {50},  
+  {50},
+  {50},
+  {-600},
+  {-600},
+  {-50},
+  {-50},
+  {-50},
+  {-50},
+  {-50},
+  {-50}  
 };
 
 
@@ -214,6 +259,24 @@ void setup() {
     {
         calculateBresenhamPoint(buffer);
     }
+
+    if((tbSteps[1][0]*2) >= 0)
+    {
+      dirCW = true;
+    }
+    else
+    {
+      dirCW = false;
+    }
+
+    //direction = !direction;
+    //digitalWrite(DIRA1, direction);
+
+    if (dirCW) {
+        PORTD |= (1 << DIRA1_BIT);  // Mettre à HIGH
+    } else {
+        PORTD &= ~(1 << DIRA1_BIT); // Mettre à LOW
+    }
     
     initBresenham(tbSteps[1][0]*2);
 
@@ -297,9 +360,9 @@ ISR(TIMER1_COMPA_vect)
         PORTH = (PORTH & ~(1 << 6)) | (stepState << 6);
 
         /*if (stepState) {
-            PORTB |= (1 << STEPA1_BIT);  // Mettre à HIGH
+            PORTH |= (1 << STEPA1_BIT);  // Mettre à HIGH
         } else {
-            PORTB &= ~(1 << STEPA1_BIT); // Mettre à LOW
+            PORTH &= ~(1 << STEPA1_BIT); // Mettre à LOW
         }*/
 
         
@@ -333,6 +396,24 @@ ISR(TIMER1_COMPA_vect)
         } else {
             readBuffer = buffer;  // Pointe sur le premier buffer
         }
+
+        /*if(dirCW)
+        {
+          direction = true;
+        }
+        else
+        {
+          direction = false;
+        }*/
+        //direction = !direction;
+        //digitalWrite(DIRA1, direction);
+
+        if (dirCW) {
+            PORTD |= (1 << DIRA1_BIT);  // Mettre à HIGH
+        } else {
+            PORTD &= ~(1 << DIRA1_BIT); // Mettre à LOW
+        }
+        
         // Envoyer le tableau calculé sur la console
         /*Serial.println("FLAG " + String(flagInter));
         Serial.println("Buffer Calculated " + String(countInterCycle) + " : ");
@@ -353,11 +434,27 @@ ISR(TIMER1_COMPA_vect)
         }*/
     }
 
-    if(countInterCycle >= NUM_CYCLE)
+    if(countInterCycle >= ROWS)
     {
         countInterCycle = 0;
-        direction = !direction;
-        digitalWrite(DIRA1, direction);
+
+        /*if(dirCW)
+        {
+          direction = true;
+        }
+        else
+        {
+          direction = false;
+        }
+        //direction = !direction;
+        digitalWrite(DIRA1, direction);*/
+
+        /*if (stepState) {
+            PORTD |= (1 << DIRA1_BIT);  // Mettre à HIGH
+        } else {
+            PORTD &= ~(1 << DIRA1_BIT); // Mettre à LOW
+        }*/
+        
         /*if (!direction) {
             readBuffer = buffer1; // Pointe sur le second buffer
         } else {
@@ -436,6 +533,15 @@ void loop() {
         oneTime = false;
         uint8_t* activeBuffer = flagInter ? buffer : buffer1;
 
+        if((tbSteps[countInterCycle][0] * 2) >= 0)
+        {
+          dirCW = true;
+        }
+        else
+        {
+          dirCW = false;
+        }
+        
         initBresenham(tbSteps[countInterCycle][0] * 2);
 
         for (int i = 0; i < BUFFER_SIZE; i++) {

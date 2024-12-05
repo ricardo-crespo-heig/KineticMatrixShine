@@ -70,7 +70,7 @@
 #define SLEEPD4 42
 
 #define STEPA1_BIT  1
-
+#define DIRA1_BIT   3
 
 extern void InitIO(void);
 

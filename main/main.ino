@@ -21,22 +21,35 @@
 #define BUFFER_SIZE   2000
 
 volatile int cycleCount = ROWS;
-volatile int pulseCount = 0;
 volatile bool direction = LOW;
-volatile bool stepState = LOW;
+//volatile bool stepState = LOW;
 volatile bool flagInter = true;
 volatile bool oneTime = true;
-volatile bool dirCW = true;
+//volatile bool dirCW = true;
 uint16_t countInterCycle = 0;
     
-int currentIndex = 0;
+/*int currentIndex = 0;
 int error = 0;
 int delta = 0;
 int threshold = BUFFER_SIZE;
 
 uint8_t *readBuffer;
 uint8_t buffer[BUFFER_SIZE];
-uint8_t buffer1[BUFFER_SIZE];
+uint8_t buffer1[BUFFER_SIZE];*/
+
+uint8_t buffer[BUFFER_SIZE][NBR_MOTORS];  // Buffer principal
+uint8_t buffer1[BUFFER_SIZE][NBR_MOTORS]; // Buffer secondaire
+uint8_t (*readBuffer)[NBR_MOTORS];        // Pointeur vers le buffer actif
+
+
+// Variables pour le calcul Bresenham par moteur
+int currentIndex[NBR_MOTORS];
+int error[NBR_MOTORS];
+int delta[NBR_MOTORS];
+int threshold[NBR_MOTORS];
+
+
+bool dirCW[NBR_MOTORS]; // Direction des moteurs
 
 /*const int tbSteps[ROWS][NBR_MOTORS] =
 {
@@ -52,7 +65,7 @@ uint8_t buffer1[BUFFER_SIZE];
   {50}  
 };*/
 
-const int tbSteps[ROWS][NBR_MOTORS] =
+/*const int16_t tbSteps[ROWS][NBR_MOTORS] =
 {
   {50},
   {50},
@@ -94,12 +107,57 @@ const int tbSteps[ROWS][NBR_MOTORS] =
   {-50},
   {-50},
   {-50}  
+};*/
+
+const int16_t tbSteps[ROWS][4] =
+{
+  {50, 50, 50, 50},
+  {50, 50, 50, 50},
+  {50, 50, 50, 50},
+  {50, 50, 50, 50},
+  {1000, 1000, 1000, 1000},
+  {1000, 1000, 1000, 1000},
+  {50, 50, 50, 50},
+  {50, 50, 50, 50},
+  {50, 50, 50, 50},
+  {50, 50, 50, 50},
+  {50, 50, 50, 50},
+  {50, 50, 50, 50},
+  {50, 50, 50, 50},
+  {1000, 1000, 1000, 1000},
+  {1000, 1000, 1000, 1000},
+  {50, 50, 50, 50},
+  {50, 50, 50, 50},
+  {50, 50, 50, 50},
+  {50, 50, 50, 50},
+  {50, 50, 50, 50},
+  {50, 50, 50, 50},
+  {50, 50, 50, 50},
+  {50, 50, 50, 50},
+  {50, 50, 50, 50},
+  {-1000, -1000, -1000, -1000},
+  {-1000, -1000, -1000, -1000},
+  {-50, -50, -50, -50},
+  {-50, -50, -50, -50},
+  {-50, -50, -50, -50},
+  {-50, -50, -50, -50},
+  {-50, -50, -50, -50},
+  {-50, -50, -50, -50},
+  {-1000, -1000, -1000, -1000},
+  {-1000, -1000, -1000, -1000},
+  {-50, -50, -50, -50},
+  {-50, -50, -50, -50},
+  {-50, -50, -50, -50},
+  {-50, -50, -50, -50},
+  {-50, -50, -50, -50},
+  {-50, -50, -50, -50}
 };
 
 
 void setup() {
 
-    //Serial.begin(250000); // Initialiser la communication série
+    Serial.begin(250000); // Initialiser la communication série
+    Serial.println("Serial begin");
     InitIO();
       
     cli();  // Désactive les interruptions globales
@@ -118,17 +176,30 @@ void setup() {
     TIMSK1 |= (1 << OCIE1A);
 
 
-
     digitalWrite(SLEEPA1, HIGH);
     digitalWrite(SLEEPA2, HIGH);
     digitalWrite(SLEEPA3, HIGH);
     digitalWrite(SLEEPA4, HIGH);
 
-    pulseCount = tbSteps[0][0]*2;
-    initBresenham(abs(tbSteps[0][0]*2));
+    for (int motor = 0; motor < NBR_MOTORS; motor++) {
+        // Déterminer la direction pour chaque moteur
+        dirCW[motor] = (tbSteps[countInterCycle][motor] > 0);
+
+        // Initialiser Bresenham pour chaque moteur avec un seuil spécifique
+        int motorThreshold = BUFFER_SIZE; // Exemple : même seuil pour tous
+        initBresenham(tbSteps[countInterCycle][motor] * 2, motor);
+
+        // Calculer les pulses pour chaque moteur
+        for (int i = 0; i < BUFFER_SIZE; i++) {
+            calculateBresenhamPoint(buffer[i], motor);
+        }
+    }
+        
+    //initBresenham(abs(tbSteps[0][0]*2));
+    //initBresenham(tbSteps[countInterCycle][motor] * 2, motor);
 
     // Optionnel : réinitialiser le buffer
-    for (int i = 0; i < BUFFER_SIZE; i++) 
+    /*for (int i = 0; i < BUFFER_SIZE; i++) 
     {
         buffer[i] = 0;
     }
@@ -136,61 +207,65 @@ void setup() {
     for(int i = 0; i < BUFFER_SIZE; i++)
     {
         calculateBresenhamPoint(buffer);
-    }
+    }*/
 
-    if((tbSteps[1][0]*2) > 0)
+    /*if((tbSteps[1][0]*2) > 0)
     {
       dirCW = true;
     }
     else
     {
       dirCW = false;
-    }
+    }*/
 
-    //direction = !direction;
-    //digitalWrite(DIRA1, direction);
-
-    if (dirCW) {
+    if (dirCW[0]) {
         PORTD |= (1 << DIRA1_BIT);  // Mettre à HIGH
     } else {
         PORTD &= ~(1 << DIRA1_BIT); // Mettre à LOW
     }
     
-    initBresenham(abs(tbSteps[1][0]*2));
-
-    for(int i = 0; i < BUFFER_SIZE; i++)
-    {
-        calculateBresenhamPoint(buffer1);
-    }
+    //initBresenham(abs(tbSteps[1][0]*2));
+    
+    //for(int i = 0; i < BUFFER_SIZE; i++)
+    //{
+    //    calculateBresenhamPoint(buffer1);
+    //}
 
     sei();  // Active les interruptions globales
     
     // Envoyer le tableau calculé sur la console
-    //Serial.println("Buffer Calculated:");
-    //for (int i = 0; i < BUFFER_SIZE; i++) {
-    //    Serial.print(buffer[i]);
-    //    Serial.print((i % 50 == 49) ? '\n' : ' '); // Sauter une ligne toutes les 50 cases
-    //}
+    Serial.println("Buffer Calculated:");
+    for (int i = 0; i < BUFFER_SIZE; i++) {
+        Serial.print(buffer[i][0]); // Affiche les pulses du moteur 0
+        Serial.print((i % 50 == 49) ? '\n' : ' '); // Sauter une ligne toutes les 50 cases
+    }
 }
 
 // Interruption pour Timer1 (50 µs)
 ISR(TIMER1_COMPA_vect) 
 {
     static uint16_t countInter = 0;
+    static bool stepState[NBR_MOTORS];
+
+    //temp
+    static uint8_t motorTemp = 0;
     
     //digitalWrite(STEPA1, stepState);
     //stepState = !stepState;
     //Serial.print(buffer[countInter]);
-    //if(buffer[countInter] == 1)
-    if(readBuffer[countInter * NBR_MOTORS + 0] == 1)
+
+    //Serial.println("Readbuffer");
+
+    //if(readBuffer[countInter * NBR_MOTORS + 0] == 1)
+    if (readBuffer[countInter][motorTemp] == 1) 
     {
-        //Serial.print("Y\n");
-        // Alterne l'état du step
-        stepState = !stepState;
+        Serial.print("Y\n");
+        // Alterne l'état du step pour le moteur actuel
+        stepState[motorTemp] = !stepState[motorTemp];
 
         
         // Applique cet état sur les broches de step
-        PORTH = (PORTH & ~(1 << 6)) | (stepState << 6);
+        PORTH = (PORTH & ~(1 << 6)) | (stepState[motorTemp] << 6);
 
         /*if (stepState) {
             PORTH |= (1 << STEPA1_BIT);  // Mettre à HIGH
@@ -206,7 +281,7 @@ ISR(TIMER1_COMPA_vect)
     }
     else
     {
-          //Serial.print("N\n");
+          Serial.print("N\n");
     }
     
     countInter++;
@@ -243,18 +318,18 @@ ISR(TIMER1_COMPA_vect)
 
         //Serial.println("Buffer Calculated : " + String(dirCW));
 
-        if (dirCW) {
+        if (dirCW[0]) {
             PORTD |= (1 << DIRA1_BIT);  // Mettre à HIGH
         } else {
             PORTD &= ~(1 << DIRA1_BIT); // Mettre à LOW
         }
         
         // Envoyer le tableau calculé sur la console
-        /*Serial.println("FLAG " + String(flagInter));
-        Serial.println("Buffer Calculated " + String(countInterCycle) + " : ");
-        Serial.println("Buffer Calculated POINTEUR :");
+        //Serial.println("FLAG " + String(flagInter));
+        //Serial.println("Buffer Calculated " + String(countInterCycle) + " : ");
+        /*Serial.println("Buffer Calculated POINTEUR :");
         for (int i = 0; i < BUFFER_SIZE; i++) {
-            Serial.print(readBuffer[i]);
+            Serial.print(readBuffer[i][0]);
             Serial.print((i % 50 == 49) ? '\n' : ' '); // Sauter une ligne toutes les 50 cases
         }
         Serial.println("Buffer Calculated BUFFER :");
@@ -271,20 +346,30 @@ ISR(TIMER1_COMPA_vect)
 
     if(countInterCycle >= ROWS)
     {
+        Serial.println("Reset");
         countInterCycle = 0;
 
     }
 }
 
-void initBresenham(int totalSteps) 
+/*void initBresenham(int totalSteps) 
 {
     currentIndex = 0;
     error = 0;
     delta = totalSteps;
     threshold = BUFFER_SIZE;
+}*/
+
+void initBresenham(int16_t totalSteps, uint8_t motorIndex) 
+{
+    currentIndex[motorIndex] = 0;
+    error[motorIndex] = 0;
+    delta[motorIndex] = abs(totalSteps);
+    threshold[motorIndex] = BUFFER_SIZE; // Initialiser le seuil pour ce moteur
 }
 
-bool calculateBresenhamPoint(uint8_t* buffer) {
+
+/*bool calculateBresenhamPoint(uint8_t* buffer) {
     if (currentIndex < BUFFER_SIZE) {
         error += delta;
         if (error >= threshold) {
@@ -302,12 +387,32 @@ bool calculateBresenhamPoint(uint8_t* buffer) {
 
     // Retourne `true` une fois terminé
     return true;
+}*/
+
+
+bool calculateBresenhamPoint(uint8_t* buffer, int motorIndex) {
+    if (currentIndex[motorIndex] < BUFFER_SIZE) {
+        error[motorIndex] += delta[motorIndex];
+        if (error[motorIndex] >= threshold[motorIndex]) {
+            buffer[currentIndex[motorIndex]] = 1; // Ajoute un pulse
+            error[motorIndex] -= threshold[motorIndex];
+        } else {
+            buffer[currentIndex[motorIndex]] = 0; // Pas de pulse
+        }
+
+        currentIndex[motorIndex]++;
+        return false; // Calcul en cours
+    }
+
+    return true; // Calcul terminé
 }
+
+
 
 void loop() {
     // Code principal, qui sera exécuté entre les interruptions
 
-    if (oneTime) 
+    /*if (oneTime) 
     {
         oneTime = false;
         uint8_t* activeBuffer = flagInter ? buffer : buffer1;
@@ -334,8 +439,37 @@ void loop() {
         //    Serial.print(activeBuffer[i]);
         //    Serial.print((i % 50 == 49) ? '\n' : ' ');
         //}
-    }
+    }*/
 
+    if (oneTime) 
+    {
+        oneTime = false;
+        uint8_t (*activeBuffer)[NBR_MOTORS] = flagInter ? buffer1 : buffer;
+
+        for (int motor = 0; motor < NBR_MOTORS; motor++) {
+            // Déterminer la direction pour chaque moteur
+            dirCW[motor] = (tbSteps[countInterCycle][motor] > 0);
+
+            // Initialiser Bresenham pour chaque moteur avec un seuil spécifique
+            int motorThreshold = BUFFER_SIZE; // Exemple : même seuil pour tous
+            initBresenham(tbSteps[countInterCycle][motor] * 2, motor);
+
+            // Calculer les pulses pour chaque moteur
+            for (int i = 0; i < BUFFER_SIZE; i++) {
+                calculateBresenhamPoint(activeBuffer[i], motor);
+            }
+        }
+        
+        Serial.println("FLAG " + String(flagInter));
+        Serial.println("Buffer Calculated " + String(countInterCycle) + " : ");
+        // Debug : Afficher les pulses du moteur 0
+        //Serial.println("Buffer Calculated " + String(countInterCycle) + " : ");
+        //Serial.println("Val " + String(tbSteps[countInterCycle][0] * 2));
+        //for (int i = 0; i < BUFFER_SIZE; i++) {
+        //    Serial.print(activeBuffer[i][0]); // Affiche les pulses du moteur 0
+        //    Serial.print((i % 50 == 49) ? '\n' : ' ');
+        //}
+    }
 
 
 }

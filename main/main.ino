@@ -11,9 +11,8 @@
 #include <avr/interrupt.h>
 #include "IO.h"
 #include "TESTMOTORS.h"
+#include "bresenham.h"
 
-
-#define NUM_PULSES    6400
 
 #define ROWS          40
 #define NBR_MOTORS    1
@@ -21,7 +20,6 @@
 #define BUFFER_SIZE   2000
 
 volatile int cycleCount = ROWS;
-volatile int pulseCount = 0;
 volatile bool direction = LOW;
 volatile bool stepState = LOW;
 volatile bool flagInter = true;
@@ -96,6 +94,7 @@ const int tbSteps[ROWS][NBR_MOTORS] =
   {-50}  
 };
 
+Bresenham bresenham(BUFFER_SIZE);
 
 void setup() {
 
@@ -124,8 +123,8 @@ void setup() {
     digitalWrite(SLEEPA3, HIGH);
     digitalWrite(SLEEPA4, HIGH);
 
-    pulseCount = tbSteps[0][0]*2;
-    initBresenham(abs(tbSteps[0][0]*2));
+    //initBresenham(abs(tbSteps[0][0]*2));
+    bresenham.init(tbSteps[0][0]*2);
 
     // Optionnel : réinitialiser le buffer
     for (int i = 0; i < BUFFER_SIZE; i++) 
@@ -135,7 +134,9 @@ void setup() {
     
     for(int i = 0; i < BUFFER_SIZE; i++)
     {
-        calculateBresenhamPoint(buffer);
+        //calculateBresenhamPoint(buffer);
+        //buffer[i] = calculateBresenhamPoint();
+        buffer[i] = bresenham.calculatePoint();
     }
 
     if((tbSteps[1][0]*2) > 0)
@@ -156,11 +157,14 @@ void setup() {
         PORTD &= ~(1 << DIRA1_BIT); // Mettre à LOW
     }
     
-    initBresenham(abs(tbSteps[1][0]*2));
+    //initBresenham(abs(tbSteps[1][0]*2));
+    bresenham.init(tbSteps[1][0]*2);
 
     for(int i = 0; i < BUFFER_SIZE; i++)
     {
-        calculateBresenhamPoint(buffer1);
+        //calculateBresenhamPoint(buffer1);
+        //buffer1[i] = calculateBresenhamPoint();
+        buffer1[i] = bresenham.calculatePoint();
     }
 
     sei();  // Active les interruptions globales
@@ -284,7 +288,7 @@ void initBresenham(int totalSteps)
     threshold = BUFFER_SIZE;
 }
 
-bool calculateBresenhamPoint(uint8_t* buffer) {
+bool calculateBresenhamPoint1(uint8_t* buffer) {
     if (currentIndex < BUFFER_SIZE) {
         error += delta;
         if (error >= threshold) {
@@ -304,6 +308,21 @@ bool calculateBresenhamPoint(uint8_t* buffer) {
     return true;
 }
 
+// Calcule la valeur suivante inline
+uint8_t calculateBresenhamPoint() {
+    if (currentIndex < BUFFER_SIZE) {
+        error += delta;
+        currentIndex++;
+        if (error >= threshold) {
+            error -= threshold;
+            return 1; // Retourne un pulse
+        } else {
+            return 0; // Pas de pulse
+        }
+    }
+    return 0; // Si le buffer est dépassé
+}
+
 void loop() {
     // Code principal, qui sera exécuté entre les interruptions
 
@@ -321,10 +340,13 @@ void loop() {
           dirCW = false;
         }
         
-        initBresenham(abs(tbSteps[countInterCycle][0] * 2));
+        //initBresenham(abs(tbSteps[countInterCycle][0] * 2));
+        bresenham.init(tbSteps[countInterCycle][0] * 2);
 
         for (int i = 0; i < BUFFER_SIZE; i++) {
-            calculateBresenhamPoint(activeBuffer);
+            //calculateBresenhamPoint(activeBuffer);
+            //activeBuffer[i] = calculateBresenhamPoint();
+            activeBuffer[i] = bresenham.calculatePoint();
         }
 
         // Affichage

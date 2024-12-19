@@ -13,7 +13,8 @@
 #include "BRESENHAM.h"
 #include "SEQUENCE.h"
 
-Bresenham bresenham(BUFFER_SIZE);
+//Bresenham bresenham(BUFFER_SIZE);
+Bresenham bresenham(BUFFER_SIZE, NBR_MOTORS);
 
 void Redirection(uint8_t matrix[][NBR_COL_MATRIX], uint16_t countInterCycle)
 {
@@ -29,21 +30,30 @@ void Redirection(uint8_t matrix[][NBR_COL_MATRIX], uint16_t countInterCycle)
     }
 
     // SLEEPA2
-    (tbSteps[countInterCycle]) ? FillColumn1(matrix, 0, 0) : FillColumn0(matrix, 0, 0);
+    //(tbSteps[countInterCycle][0]) ? FillColumn1(matrix, 0, 0) : FillColumn0(matrix, 0, 0);
 
-    /// MOTOR 1
+    /// MOTOR 0
     // SLEEPA1
-    (tbSteps[countInterCycle]) ? FillColumn1(matrix, 6, 0) : FillColumn0(matrix, 6, 0);
+    (tbSteps[countInterCycle][0]) ? FillColumn1(matrix, 6, 0) : FillColumn0(matrix, 6, 0);
     // STEPA1
-    FillColumnBrenham(matrix, 6, 6, countInterCycle);
+    FillColumnBrenham(matrix, 0, 6, 6, countInterCycle);
     // DIRA1
     (dirCW) ? FillColumn1(matrix, 3, 3) : FillColumn0(matrix, 3, 3);
 
-    /*Serial.println("DIR " + String(dirCW));
+    /// MOTOR 1
+    // SLEEPA2
+    (tbSteps[countInterCycle][1]) ? FillColumn1(matrix, 0, 0) : FillColumn0(matrix, 0, 0);
+    // STEPA2
+    FillColumnBrenham(matrix, 1, 6, 5, countInterCycle);
+    // DIRA2
+    (dirCW) ? FillColumn1(matrix, 6, 1) : FillColumn0(matrix, 6, 1);
+
+
+    Serial.println("DIR " + String(dirCW));
     Serial.println("CountInterCycle " + String(countInterCycle));
     Serial.println("tbSteps[countInterCycle][0] " + String(tbSteps[countInterCycle][0]));
 
-    // Parcourir et afficher le tableau
+    /*// Parcourir et afficher le tableau
     for (int i = 0; i < BUFFER_SIZE; i++) {
         for (int j = 0; j < NBR_COL_MATRIX; j++) {
             Serial.print(matrix[i][j]);
@@ -72,13 +82,16 @@ inline void FillColumn1(uint8_t matrix[][NBR_COL_MATRIX], uint8_t col, uint8_t b
     }
 }
 
-inline void FillColumnBrenham(uint8_t matrix[][NBR_COL_MATRIX], uint8_t col, uint8_t bit, uint16_t countInterCycle)
+inline void FillColumnBrenham(uint8_t matrix[][NBR_COL_MATRIX], uint8_t motorIndex, uint8_t col, uint8_t bit, uint16_t countInterCycle)
 {
-    bresenham.init(tbSteps[countInterCycle][0]);
+    //bresenham.init(tbSteps[countInterCycle][0]);
+    bresenham.init(tbSteps[countInterCycle][motorIndex], motorIndex);
+
 
     for (int i = 0; i < BUFFER_SIZE; i++) 
     {
-        matrix[i][col] = (matrix[i][col] & ~(1 << bit)) | (bresenham.calculatePoint() << bit);
+        //matrix[i][col] = (matrix[i][col] & ~(1 << bit)) | (bresenham.calculatePoint() << bit);
+        matrix[i][col] = (matrix[i][col] & ~(1 << bit)) | (bresenham.calculatePoint(motorIndex) << bit);
     }
 }
 

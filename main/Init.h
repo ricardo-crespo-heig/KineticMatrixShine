@@ -14,10 +14,10 @@
 
 #define NBR_COL_MATRIX    8
 //#define BUFFER_SIZE   2000
-#define BUFFER_SIZE   500
+#define BUFFER_SIZE   100
 
 #define SEQUENCE_ROWS          40
-#define NBR_MOTORS    1
+#define NBR_MOTORS    2
 
 void InitTimer1(void);
 

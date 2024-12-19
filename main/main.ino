@@ -15,17 +15,17 @@
 #include "BRESENHAM.h"
 #include "REDIRECTION.h"
 
-volatile int cycleCount = SEQUENCE_ROWS;
+//volatile int cycleCount = SEQUENCE_ROWS;
 volatile bool flagInter = true;
 volatile bool oneTime = true;
 uint16_t countInterCycle = 0;
 
-const uint8_t matrix0[BUFFER_SIZE][NBR_COL_MATRIX];
-const uint8_t matrix1[BUFFER_SIZE][NBR_COL_MATRIX];
+uint8_t matrix0[BUFFER_SIZE][NBR_COL_MATRIX];
+uint8_t matrix1[BUFFER_SIZE][NBR_COL_MATRIX];
 
 void setup() {
 
-    //Serial.begin(250000); // Initialiser la communication série
+    Serial.begin(250000); // Initialiser la communication série
     InitIO();
       
     cli();  // Désactive les interruptions globales
@@ -107,6 +107,7 @@ ISR(TIMER1_COMPA_vect)
           PORTD &= ~activeBuffer[countInter][3] << 3;
       }*/
 
+      PORTA = activeBuffer[countInter][0];
       PORTD = activeBuffer[countInter][3];
       PORTH = activeBuffer[countInter][6];
       

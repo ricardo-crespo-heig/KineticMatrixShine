@@ -8,7 +8,7 @@
 
 #include <Arduino.h>
 #include "INIT.h"
-#include "IO.h"
+//#include "IO.h"
 #include "SEQUENCE.h"
 
 /*const int16_t tbSteps[SEQUENCE_ROWS][NBR_MOTORS] =

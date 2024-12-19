@@ -5,8 +5,8 @@
  Description :
 ******************************************************************/
 
-#include <Arduino.h>
-#include "IO.h"
+//#include <Arduino.h>
+//#include "IO.h"
 
 // bresenham.h
 #ifndef INIT_H
@@ -20,6 +20,8 @@
 #define NBR_MOTORS    4
 
 void InitTimer1(void);
+
+void DisableSleep(void);
 
 #endif // BRESENHAM_H
 

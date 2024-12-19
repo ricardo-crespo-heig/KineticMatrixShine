@@ -6,9 +6,9 @@
  Description :
 ******************************************************************/
 
-#include <Arduino.h>
-#include <avr/io.h>
-#include <avr/interrupt.h>
+//#include <Arduino.h>
+//#include <avr/io.h>
+//#include <avr/interrupt.h>
 #include "INIT.h"
 #include "IO.h"
 #include "SEQUENCE.h"
@@ -34,28 +34,11 @@ void setup() {
 
     Redirection(matrix0, countInterCycle);
 
-    // Parcourir et afficher le tableau
-    /*for (int i = 0; i < BUFFER_SIZE; i++) {
-        for (int j = 0; j < NBR_COL_MATRIX; j++) {
-            Serial.print(matrix0[i][j]);
-            Serial.print("\t"); // Tabulation entre les colonnes
-        }
-        Serial.println(); // Saut de ligne après chaque ligne
-    }*/
-
-
     Redirection(matrix1, countInterCycle);
 
     DisableSleep();
 
     sei();  // Active les interruptions globales
-    
-    // Envoyer le tableau calculé sur la console
-    //Serial.println("Buffer Calculated:");
-    //for (int i = 0; i < BUFFER_SIZE; i++) {
-    //    Serial.print(buffer[i]);
-    //    Serial.print((i % 50 == 49) ? '\n' : ' '); // Sauter une ligne toutes les 50 cases
-    //}
 }
 
 // Interruption pour Timer1 (50 µs)

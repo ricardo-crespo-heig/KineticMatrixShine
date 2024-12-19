@@ -5,9 +5,9 @@
  Description :
 ******************************************************************/
 
-#include <Arduino.h>
-#include "IO.h"
-#include "INIT.h"
+//#include <Arduino.h>
+//#include "IO.h"
+//#include "INIT.h"
 
 // bresenham.h
 #ifndef REDIRECTION_H

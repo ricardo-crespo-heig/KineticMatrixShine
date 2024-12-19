@@ -6,16 +6,12 @@
  Description :
 ******************************************************************/
 
-//#include <Arduino.h>
-//#include <avr/io.h>
-//#include <avr/interrupt.h>
 #include "INIT.h"
 #include "IO.h"
 #include "SEQUENCE.h"
 #include "BRESENHAM.h"
 #include "REDIRECTION.h"
 
-//volatile int cycleCount = SEQUENCE_ROWS;
 volatile bool flagInter = true;
 volatile bool oneTime = true;
 uint16_t countInterCycle = 0;
@@ -51,18 +47,16 @@ ISR(TIMER1_COMPA_vect)
     // Pointeur vers le tableau actif
     uint8_t (*activeBuffer)[NBR_COL_MATRIX] = flagInter ? matrix0 : matrix1;
 
-
-    
-    //digitalWrite(STEPA1, stepState);
-    //stepState = !stepState;
-    //Serial.print(buffer[countInter]);
-    //if(buffer[countInter] == 1)
-
     if(flipFlop)
     {
       flipFlop = false;
       // Applique cet état sur les broches de step
-      PORTH = (PORTH & ~(1 << 6)) | (0 << 6);
+      PORTH &= ~(1 << BIT6);
+      PORTH &= ~(1 << BIT5);
+      PORTH &= ~(1 << BIT4);
+      PORTH &= ~(1 << BIT3);
+      
+      //PORTH = 0;
     }
     else
     {
@@ -78,18 +72,14 @@ ISR(TIMER1_COMPA_vect)
       PORTH = *(p++); // Colonne 6 (Port H)
       PORTL = *(p++); // Colonne 7 (Port L)*/
 
-      /*if(activeBuffer[countInter][3] & (1 << 3))
-      {
-          PORTD |= activeBuffer[countInter][3] << 3;
-      }
-      else
-      {
-          PORTD &= ~activeBuffer[countInter][3] << 3;
-      }*/
-
       PORTA = activeBuffer[countInter][0];
+      PORTB = activeBuffer[countInter][1];
+      PORTC = activeBuffer[countInter][2];
       PORTD = activeBuffer[countInter][3];
+      PORTE = activeBuffer[countInter][4];
+      PORTG = activeBuffer[countInter][5];
       PORTH = activeBuffer[countInter][6];
+      PORTL = activeBuffer[countInter][7];
       
       countInter++;
     }

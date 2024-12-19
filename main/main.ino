@@ -9,17 +9,13 @@
 #include <Arduino.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include "INIT.h"
 #include "IO.h"
-#include "TESTMOTORS.h"
-#include "bresenham.h"
+#include "SEQUENCE.h"
+#include "BRESENHAM.h"
+#include "REDIRECTION.h"
 
-
-#define ROWS          40
-#define NBR_MOTORS    1
-
-#define BUFFER_SIZE   2000
-
-volatile int cycleCount = ROWS;
+volatile int cycleCount = SEQUENCE_ROWS;
 volatile bool direction = LOW;
 volatile bool stepState = LOW;
 volatile bool flagInter = true;
@@ -27,14 +23,17 @@ volatile bool oneTime = true;
 volatile bool dirCW = true;
 uint16_t countInterCycle = 0;
     
-int currentIndex = 0;
-int error = 0;
-int delta = 0;
-int threshold = BUFFER_SIZE;
+//int currentIndex = 0;
+//int error = 0;
+//int delta = 0;
+//int threshold = BUFFER_SIZE;
 
-uint8_t *readBuffer;
-uint8_t buffer[BUFFER_SIZE];
-uint8_t buffer1[BUFFER_SIZE];
+//uint8_t *readBuffer;
+//uint8_t buffer[BUFFER_SIZE];
+//uint8_t buffer1[BUFFER_SIZE];
+
+const uint8_t matrix0[BUFFER_SIZE][NBR_COL_MATRIX];
+const uint8_t matrix1[BUFFER_SIZE][NBR_COL_MATRIX];
 
 /*const int tbSteps[ROWS][NBR_MOTORS] =
 {
@@ -50,7 +49,7 @@ uint8_t buffer1[BUFFER_SIZE];
   {50}  
 };*/
 
-const int tbSteps[ROWS][NBR_MOTORS] =
+/*const uint16_t tbSteps[ROWS][NBR_MOTORS] =
 {
   {50},
   {50},
@@ -92,7 +91,7 @@ const int tbSteps[ROWS][NBR_MOTORS] =
   {-50},
   {-50},
   {-50} 
-};
+};*/
 
 /*const int tbSteps[ROWS][NBR_MOTORS] =
 {
@@ -138,7 +137,7 @@ const int tbSteps[ROWS][NBR_MOTORS] =
   {2000},
 };*/
 
-Bresenham bresenham(BUFFER_SIZE);
+//Bresenham bresenham(BUFFER_SIZE);
 
 void setup() {
 
@@ -147,32 +146,7 @@ void setup() {
       
     cli();  // Désactive les interruptions globales
 
-    // TIMER 1 for interrupt frequency 100000 Hz:
-    /*TCCR1A = 0; // set entire TCCR1A register to 0
-    TCCR1B = 0; // same for TCCR1B
-    TCNT1  = 0; // initialize counter value to 0
-    // set compare match register for 100000 Hz increments
-    OCR1A = 799; // = 16000000 / (1 * 20000) - 1 (must be <65536)
-    // turn on CTC mode
-    TCCR1B |= (1 << WGM12);
-    // Set CS12, CS11 and CS10 bits for 1 prescaler
-    TCCR1B |= (0 << CS12) | (0 << CS11) | (1 << CS10);
-    // enable timer compare interrupt
-    TIMSK1 |= (1 << OCIE1A);*/
-
-    // TIMER 1 for interrupt frequency 40000 Hz:
-    TCCR1A = 0; // set entire TCCR1A register to 0
-    TCCR1B = 0; // same for TCCR1B
-    TCNT1  = 0; // initialize counter value to 0
-    // set compare match register for 40000 Hz increments
-    OCR1A = 399; // = 16000000 / (1 * 40000) - 1 (must be <65536)
-    // turn on CTC mode
-    TCCR1B |= (1 << WGM12);
-    // Set CS12, CS11 and CS10 bits for 1 prescaler
-    TCCR1B |= (0 << CS12) | (0 << CS11) | (1 << CS10);
-    // enable timer compare interrupt
-    TIMSK1 |= (1 << OCIE1A);
-
+    InitTimer1();
 
     digitalWrite(SLEEPA1, HIGH);
     digitalWrite(SLEEPA2, HIGH);
@@ -180,22 +154,22 @@ void setup() {
     digitalWrite(SLEEPA4, HIGH);
 
     //initBresenham(abs(tbSteps[0][0]*2));
-    bresenham.init(tbSteps[0][0]);
+    //bresenham.init(tbSteps[0][0]);
 
     // Optionnel : réinitialiser le buffer
     for (int i = 0; i < BUFFER_SIZE; i++) 
     {
-        buffer[i] = 0;
+        //buffer[i] = 0;
     }
     
     for(int i = 0; i < BUFFER_SIZE; i++)
     {
         //calculateBresenhamPoint(buffer);
         //buffer[i] = calculateBresenhamPoint();
-        buffer[i] = bresenham.calculatePoint();
+        //buffer[i] = bresenham.calculatePoint();
     }
 
-    readBuffer = buffer;
+    //readBuffer = buffer;
 
     if((tbSteps[1][0]) > 0)
     {
@@ -216,13 +190,13 @@ void setup() {
     }
     
     //initBresenham(abs(tbSteps[1][0]*2));
-    bresenham.init(tbSteps[1][0]);
+    //bresenham.init(tbSteps[1][0]);
 
     for(int i = 0; i < BUFFER_SIZE; i++)
     {
         //calculateBresenhamPoint(buffer1);
         //buffer1[i] = calculateBresenhamPoint();
-        buffer1[i] = bresenham.calculatePoint();
+        //buffer1[i] = bresenham.calculatePoint();
     }
 
     sei();  // Active les interruptions globales
@@ -242,6 +216,20 @@ ISR(TIMER1_COMPA_vect)
     
     static bool flipFlop = true;
 
+    // Pointeur vers le tableau actif
+    uint8_t (*activeBuffer)[NBR_COL_MATRIX] = flagInter ? matrix0 : matrix1;
+
+    if(activeBuffer[countInter][3] & (1 << 3))
+    {
+        PORTD |= activeBuffer[countInter][3] << 3;
+    }
+    else
+    {
+        PORTD &= ~activeBuffer[countInter][3] << 3;
+    }
+
+    PORTH = activeBuffer[countInter][6];
+    
     //digitalWrite(STEPA1, stepState);
     //stepState = !stepState;
     //Serial.print(buffer[countInter]);
@@ -259,7 +247,7 @@ ISR(TIMER1_COMPA_vect)
       flipFlop = true;
     
 
-      if(readBuffer[countInter * NBR_MOTORS + 0] == 1)
+      /*if(readBuffer[countInter * NBR_MOTORS + 0] == 1)
       {
           //Serial.print("Y\n");
           // Alterne l'état du step
@@ -285,13 +273,13 @@ ISR(TIMER1_COMPA_vect)
           //digitalWrite(STEPA2, stepState);
           //digitalWrite(STEPA3, stepState);
           //digitalWrite(STEPA4, stepState);
-      }
+      /*}
       else
       {
           // Applique cet état sur les broches de sleep
           PORTH = (PORTH & ~(1 << 0)) | (0 << 0);
             //Serial.print("N\n");
-      }
+      }*/
       
       countInter++;
     }
@@ -322,11 +310,11 @@ ISR(TIMER1_COMPA_vect)
         oneTime = true;
         flagInter = !flagInter;           // Signale que 100 ms sont écoulées
         
-        if (flagInter) {
+        /*if (flagInter) {
             readBuffer = buffer1; // Pointe sur le second buffer
         } else {
             readBuffer = buffer;  // Pointe sur le premier buffer
-        }
+        }*/
 
         /*if(dirCW)
         {
@@ -367,14 +355,14 @@ ISR(TIMER1_COMPA_vect)
         }*/
     }
 
-    if(countInterCycle >= ROWS)
+    if(countInterCycle >= SEQUENCE_ROWS)
     {
         countInterCycle = 0;
 
     }
 }
 
-void initBresenham(int totalSteps) 
+/*void initBresenham(int totalSteps) 
 {
     currentIndex = 0;
     error = 0;
@@ -415,7 +403,7 @@ uint8_t calculateBresenhamPoint() {
         }
     }
     return 0; // Si le buffer est dépassé
-}
+}*/
 
 void loop() {
     // Code principal, qui sera exécuté entre les interruptions
@@ -423,9 +411,9 @@ void loop() {
     if (oneTime) 
     {
         oneTime = false;
-        uint8_t* activeBuffer = flagInter ? buffer : buffer1;
+        //uint8_t* activeBuffer = flagInter ? buffer : buffer1;
 
-        if((tbSteps[countInterCycle][0] * 2) > 0)
+        if((tbSteps[countInterCycle][0]) > 0)
         {
           dirCW = true;
         }
@@ -435,12 +423,12 @@ void loop() {
         }
         
         //initBresenham(abs(tbSteps[countInterCycle][0] * 2));
-        bresenham.init(tbSteps[countInterCycle][0]);
+        //bresenham.init(tbSteps[countInterCycle][0]);
 
         for (int i = 0; i < BUFFER_SIZE; i++) {
             //calculateBresenhamPoint(activeBuffer);
             //activeBuffer[i] = calculateBresenhamPoint();
-            activeBuffer[i] = bresenham.calculatePoint();
+            //activeBuffer[i] = bresenham.calculatePoint();
         }
 
         // Affichage
@@ -450,6 +438,8 @@ void loop() {
         //    Serial.print(activeBuffer[i]);
         //    Serial.print((i % 50 == 49) ? '\n' : ' ');
         //}
+
+        Redirection(flagInter ? matrix0 : matrix0, countInterCycle);
     }
 
 

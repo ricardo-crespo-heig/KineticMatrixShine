@@ -8,7 +8,7 @@
 
 #include <Arduino.h>
 #include "IO.h"
-#include "bresenham.h"
+#include "BRESENHAM.h"
 
 /*// Constructeur
 Bresenham::Bresenham(uint16_t bufferSize)

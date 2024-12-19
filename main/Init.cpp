@@ -26,3 +26,11 @@ void InitTimer1(void)
     // enable timer compare interrupt
     TIMSK1 |= (1 << OCIE1A);
 }
+
+void DisableSleep(void)
+{
+    digitalWrite(SLEEPA1, HIGH);
+    digitalWrite(SLEEPA2, HIGH);
+    digitalWrite(SLEEPA3, HIGH);
+    digitalWrite(SLEEPA4, HIGH);
+}

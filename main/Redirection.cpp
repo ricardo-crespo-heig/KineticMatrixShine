@@ -20,7 +20,7 @@ void Redirection(uint8_t matrix[][NBR_COL_MATRIX], uint16_t countInterCycle)
 {
     //bool dirCW = false;
     bool tbDirCW[NBR_MOTORS]; 
-
+    uint8_t actualMotor = 0;
     /*if((tbSteps[countInterCycle][0]) > 0)
     {
       dirCW = true;
@@ -38,25 +38,42 @@ void Redirection(uint8_t matrix[][NBR_COL_MATRIX], uint16_t countInterCycle)
         }
     }
 
-    // SLEEPA2
-    //(tbSteps[countInterCycle][0]) ? FillColumn1(matrix, 0, 0) : FillColumn0(matrix, 0, 0);
 
-    /// MOTOR 0
+    // MOTOR 0
+    actualMotor = 0;
     // SLEEPA1
-    (tbSteps[countInterCycle][0]) ? FillColumn1(matrix, 6, 0) : FillColumn0(matrix, 6, 0);
+    (tbSteps[countInterCycle][actualMotor]) ? FillColumn1(matrix, MPORTH, BIT0) : FillColumn0(matrix, MPORTH, BIT0);
     // STEPA1
-    FillColumnBrenham(matrix, 0, 6, 6, countInterCycle);
+    FillColumnBrenham(matrix, actualMotor, MPORTH, BIT6, countInterCycle);
     // DIRA1
-    (tbDirCW[0]) ? FillColumn1(matrix, 3, 3) : FillColumn0(matrix, 3, 3);
+    (tbDirCW[actualMotor]) ? FillColumn1(matrix, MPORTD, BIT3) : FillColumn0(matrix, MPORTD, BIT3);
 
-    /// MOTOR 1
+    // MOTOR 1
+    actualMotor = 1;
     // SLEEPA2
-    (tbSteps[countInterCycle][1]) ? FillColumn1(matrix, 0, 0) : FillColumn0(matrix, 0, 0);
+    (tbSteps[countInterCycle][actualMotor]) ? FillColumn1(matrix, MPORTA, BIT0) : FillColumn0(matrix, MPORTA, BIT0);
     // STEPA2
-    FillColumnBrenham(matrix, 1, 6, 5, countInterCycle);
+    FillColumnBrenham(matrix, actualMotor, MPORTH, BIT5, countInterCycle);
     // DIRA2
-    (tbDirCW[1]) ? FillColumn1(matrix, 6, 1) : FillColumn0(matrix, 6, 1);
+    (tbDirCW[actualMotor]) ? FillColumn1(matrix, MPORTH, BIT1) : FillColumn0(matrix, MPORTH, BIT1);
 
+    // MOTOR 2
+    actualMotor = 2;
+    // SLEEPA3
+    (tbSteps[countInterCycle][actualMotor]) ? FillColumn1(matrix, MPORTA, BIT2) : FillColumn0(matrix, MPORTA, BIT2);
+    // STEPA3
+    FillColumnBrenham(matrix, actualMotor, MPORTH, BIT4, countInterCycle);
+    // DIRA3
+    (tbDirCW[actualMotor]) ? FillColumn1(matrix, MPORTA, BIT1) : FillColumn0(matrix, MPORTA, BIT1);
+
+    // MOTOR 3
+    actualMotor = 3;
+    // SLEEPA4
+    (tbSteps[countInterCycle][actualMotor]) ? FillColumn1(matrix, MPORTA, BIT4) : FillColumn0(matrix, MPORTA, BIT4);
+    // STEPA4
+    FillColumnBrenham(matrix, actualMotor, MPORTH, BIT3, countInterCycle);
+    // DIRA4
+    (tbDirCW[actualMotor]) ? FillColumn1(matrix, MPORTA, BIT3) : FillColumn0(matrix, MPORTA, BIT3);
 
     /*Serial.println("DIR " + String(tbDirCW[0]));
     Serial.println("DIR " + String(tbDirCW[1]));

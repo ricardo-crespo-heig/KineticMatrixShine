@@ -9,6 +9,24 @@
 #ifndef IO
 #define IO
 
+#define MPORTA 0
+#define MPORTB 1
+#define MPORTC 2
+#define MPORTD 3
+#define MPORTE 4
+#define MPORTG 5
+#define MPORTH 6
+#define MPORTL 7
+
+#define BIT0  0
+#define BIT1  1
+#define BIT2  2
+#define BIT3  3
+#define BIT4  4
+#define BIT5  5
+#define BIT6  6
+#define BIT7  7
+
 #define STEPA1 9  //
 #define STEPA2 8  //
 #define STEPA3 7  //

@@ -16,8 +16,8 @@
 //#define BUFFER_SIZE   2000
 #define BUFFER_SIZE   400
 
-#define SEQUENCE_ROWS          40
-#define NBR_MOTORS    2
+#define SEQUENCE_ROWS 40
+#define NBR_MOTORS    4
 
 void InitTimer1(void);
 

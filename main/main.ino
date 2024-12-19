@@ -46,10 +46,7 @@ void setup() {
 
     Redirection(matrix1, countInterCycle);
 
-    digitalWrite(SLEEPA1, HIGH);
-    digitalWrite(SLEEPA2, HIGH);
-    digitalWrite(SLEEPA3, HIGH);
-    digitalWrite(SLEEPA4, HIGH);
+    DisableSleep();
 
     sei();  // Active les interruptions globales
     

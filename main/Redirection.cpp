@@ -39,12 +39,12 @@ void Redirection(uint8_t matrix[][NBR_COL_MATRIX], uint16_t countInterCycle)
     // DIRA1
     (dirCW) ? FillColumn1(matrix, 3, 3) : FillColumn0(matrix, 3, 3);
 
-    /*Serial.println("DIR " + String(dirCW));
-    Serial.println("CountInterCycle " + String(countInterCycle));
-    Serial.println("tbSteps[countInterCycle][0] " + String(tbSteps[countInterCycle][0]));
+    //Serial.println("PDIR " + String(dirCW));
+    //Serial.println("CountInterCycle " + String(countInterCycle));
+    //Serial.println("tbSteps[countInterCycle][0] " + String(tbSteps[countInterCycle][0]));
 
     // Parcourir et afficher le tableau
-    for (int i = 0; i < BUFFER_SIZE; i++) {
+    /*for (int i = 0; i < BUFFER_SIZE; i++) {
         for (int j = 0; j < NBR_COL_MATRIX; j++) {
             Serial.print(matrix[i][j]);
             Serial.print("\t"); // Tabulation entre les colonnes

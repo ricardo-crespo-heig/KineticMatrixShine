@@ -19,7 +19,8 @@
 #define SEQUENCE_ROWS          40
 #define NBR_MOTORS    1
 
-void InitTimer1(void);
+//void InitTimer1(void);
+void InitTimer1_Due(void);
 
 #endif // BRESENHAM_H
 

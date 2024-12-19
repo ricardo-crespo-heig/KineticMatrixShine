@@ -1,15 +1,11 @@
-/******************************************************************
- Created with PROGRAMINO IDE for Arduino - 15.03.2024 00:17:17
- Libraries   :
- Author      :
- Description :
-******************************************************************/
+ /************************************************************************************
+ * @file        Redirection.h
+ * @project     KineticMatrixShine
+ * @author      Ricardo Crespo
+ * @date        19.12.2024
+ * @brief       Header of redirection functions
+ ************************************************************************************/
 
-//#include <Arduino.h>
-//#include "IO.h"
-//#include "INIT.h"
-
-// bresenham.h
 #ifndef REDIRECTION_H
 #define REDIRECTION_H
 
@@ -19,5 +15,4 @@ inline void FillColumn0(uint8_t matrix[][NBR_COL_MATRIX], uint8_t col, uint8_t b
 inline void FillColumn1(uint8_t matrix[][NBR_COL_MATRIX], uint8_t col, uint8_t bit);
 inline void FillColumnBrenham(uint8_t matrix[][NBR_COL_MATRIX], uint8_t motorIndex, uint8_t col, uint8_t bit, uint16_t countInterCycle);
 
-#endif // BRESENHAM_H
-
+#endif

@@ -1,10 +1,10 @@
-/******************************************************************
- Created with PROGRAMINO IDE for Arduino - 14.03.2024 23:45:26
- Project     :
- Libraries   :
- Author      :
- Description :
-******************************************************************/
+ /************************************************************************************
+ * @file        main.ino
+ * @project     KineticMatrixShine
+ * @author      Ricardo Crespo
+ * @date        02.11.2024
+ * @brief       Main program
+ ************************************************************************************/
 
 #include "INIT.h"
 #include "IO.h"
@@ -13,7 +13,7 @@
 #include "REDIRECTION.h"
 
 volatile bool flagInter = true;
-volatile bool oneTime = true;
+volatile bool oneTimeEveryTime = true;
 uint16_t countInterCycle = 0;
 
 uint8_t matrix0[BUFFER_SIZE][NBR_COL_MATRIX];
@@ -56,7 +56,7 @@ ISR(TIMER1_COMPA_vect)
       PORTH &= ~(1 << BIT5);
       PORTH &= ~(1 << BIT4);
       PORTH &= ~(1 << BIT3);
-      
+
     }
     else
     {
@@ -72,15 +72,6 @@ ISR(TIMER1_COMPA_vect)
       PORTH = *(p++); // Colonne 6 (Port H)
       PORTL = *(p++); // Colonne 7 (Port L)
 
-      /*PORTA = activeBuffer[countInter][0];
-      PORTB = activeBuffer[countInter][1];
-      PORTC = activeBuffer[countInter][2];
-      PORTD = activeBuffer[countInter][3];
-      PORTE = activeBuffer[countInter][4];
-      PORTG = activeBuffer[countInter][5];
-      PORTH = activeBuffer[countInter][6];
-      PORTL = activeBuffer[countInter][7];*/
-      
       countInter++;
     }
 
@@ -88,7 +79,7 @@ ISR(TIMER1_COMPA_vect)
     {
         countInter = 0;
         countInterCycle++;
-        oneTime = true;
+        oneTimeEveryTime = true;
         flagInter = !flagInter;           // Signale que 100 ms sont écoulées
     }
 
@@ -100,9 +91,9 @@ ISR(TIMER1_COMPA_vect)
 
 void loop() 
 {
-    if (oneTime) 
+    if (oneTimeEveryTime) 
     {
-        oneTime = false;
+        oneTimeEveryTime = false;
 
         Redirection(flagInter ? matrix0 : matrix1, countInterCycle);
     }

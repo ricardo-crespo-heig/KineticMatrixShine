@@ -1,10 +1,10 @@
-/******************************************************************
- Created with PROGRAMINO IDE for Arduino - 14.03.2024 23:54:45
- Project     :
- Libraries   :
- Author      :
- Description :
-******************************************************************/
+ /************************************************************************************
+ * @file        IO.cpp
+ * @project     KineticMatrixShine
+ * @author      Ricardo Crespo
+ * @date        02.11.2024
+ * @brief       IO functions
+ ************************************************************************************/
 
 #include <Arduino.h>
 #include "IO.h"
@@ -28,6 +28,5 @@ void InitIO()
     pinMode(SLEEPA2, OUTPUT);
     pinMode(SLEEPA3, OUTPUT);
     pinMode(SLEEPA4, OUTPUT);
-
 
 }

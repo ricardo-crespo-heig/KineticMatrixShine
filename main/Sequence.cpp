@@ -1,14 +1,13 @@
-/******************************************************************
- Created with PROGRAMINO IDE for Arduino - 15.03.2024 00:17:00
- Project     :
- Libraries   :
- Author      :
- Description :
-******************************************************************/
+ /************************************************************************************
+ * @file        Sequence.cpp
+ * @project     KineticMatrixShine
+ * @author      Ricardo Crespo
+ * @date        19.12.2024
+ * @brief       Sequence array
+ ************************************************************************************/
 
 #include <Arduino.h>
 #include "INIT.h"
-//#include "IO.h"
 #include "SEQUENCE.h"
 
 /*const int16_t tbSteps[SEQUENCE_ROWS][NBR_MOTORS] =
@@ -230,4 +229,3 @@ const int16_t tbSteps[SEQUENCE_ROWS][4] =
   {-50, 50, -50, 50},
   {-50, 50, -50, 50}
 };
-

@@ -1,10 +1,10 @@
-/******************************************************************
- Created with PROGRAMINO IDE for Arduino - 14.03.2024 23:56:23
- Libraries   :
- Author      :
- Description :
-******************************************************************/
-
+ /************************************************************************************
+ * @file        IO.h
+ * @project     KineticMatrixShine
+ * @author      Ricardo Crespo
+ * @date        02.11.2024
+ * @brief       Header of IO functions
+ ************************************************************************************/
 
 #ifndef IO
 #define IO
@@ -27,25 +27,25 @@
 #define BIT6  6
 #define BIT7  7
 
-#define STEPA1 9  //
-#define STEPA2 8  //
-#define STEPA3 7  //
-#define STEPA4 6  //
+#define STEPA1 9  
+#define STEPA2 8  
+#define STEPA3 7  
+#define STEPA4 6  
 
-#define STEPB1 13  //
-#define STEPB2 12  //
-#define STEPB3 11  //
-#define STEPB4 10  //
+#define STEPB1 13  
+#define STEPB2 12  
+#define STEPB3 11  
+#define STEPB4 10  
 
-#define STEPC1 1   //
-#define STEPC2 44  //
-#define STEPC3 45  //
-#define STEPC4 46  //
+#define STEPC1 1   
+#define STEPC2 44  
+#define STEPC3 45  
+#define STEPC4 46  
 
-#define STEPD1 5  //
-#define STEPD2 4  //
-#define STEPD3 3  //
-#define STEPD4 2  //
+#define STEPD1 5  
+#define STEPD2 4  
+#define STEPD3 3  
+#define STEPD4 2  
 
 #define DIRA1 18
 #define DIRA2 16

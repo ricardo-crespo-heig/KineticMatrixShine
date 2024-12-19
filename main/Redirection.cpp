@@ -1,10 +1,10 @@
-/******************************************************************
- Created with PROGRAMINO IDE for Arduino - 15.03.2024 00:17:00
- Project     :
- Libraries   :
- Author      :
- Description :
-******************************************************************/
+ /************************************************************************************
+ * @file        Redirection.cpp
+ * @project     KineticMatrixShine
+ * @author      Ricardo Crespo
+ * @date        19.12.2024
+ * @brief       Redirection functions
+ ************************************************************************************/
 
 #include <Arduino.h>
 #include "INIT.h"
@@ -13,22 +13,12 @@
 #include "BRESENHAM.h"
 #include "SEQUENCE.h"
 
-//Bresenham bresenham(BUFFER_SIZE);
 Bresenham bresenham(BUFFER_SIZE, NBR_MOTORS);
 
 void Redirection(uint8_t matrix[][NBR_COL_MATRIX], uint16_t countInterCycle)
 {
-    //bool dirCW = false;
     bool tbDirCW[NBR_MOTORS]; 
     uint8_t actualMotor = 0;
-    /*if((tbSteps[countInterCycle][0]) > 0)
-    {
-      dirCW = true;
-    }
-    else
-    {
-      dirCW = false;
-    }*/
 
     for (uint8_t motorIndex = 0; motorIndex < NBR_MOTORS; motorIndex++) {
         if (tbSteps[countInterCycle][motorIndex] > 0) {
@@ -37,7 +27,6 @@ void Redirection(uint8_t matrix[][NBR_COL_MATRIX], uint16_t countInterCycle)
             tbDirCW[motorIndex] = false; // Moteur tourne dans le sens CCW
         }
     }
-
 
     // MOTOR 0
     actualMotor = 0;
@@ -75,6 +64,7 @@ void Redirection(uint8_t matrix[][NBR_COL_MATRIX], uint16_t countInterCycle)
     // DIRA4
     (tbDirCW[actualMotor]) ? FillColumn1(matrix, MPORTA, BIT3) : FillColumn0(matrix, MPORTA, BIT3);
 
+    // DEBUG
     /*Serial.println("DIR " + String(tbDirCW[0]));
     Serial.println("DIR " + String(tbDirCW[1]));
     Serial.println("CountInterCycle " + String(countInterCycle));
@@ -111,14 +101,10 @@ inline void FillColumn1(uint8_t matrix[][NBR_COL_MATRIX], uint8_t col, uint8_t b
 
 inline void FillColumnBrenham(uint8_t matrix[][NBR_COL_MATRIX], uint8_t motorIndex, uint8_t col, uint8_t bit, uint16_t countInterCycle)
 {
-    //bresenham.init(tbSteps[countInterCycle][0]);
     bresenham.init(tbSteps[countInterCycle][motorIndex], motorIndex);
-
 
     for (int i = 0; i < BUFFER_SIZE; i++) 
     {
-        //matrix[i][col] = (matrix[i][col] & ~(1 << bit)) | (bresenham.calculatePoint() << bit);
         matrix[i][col] = (matrix[i][col] & ~(1 << bit)) | (bresenham.calculatePoint(motorIndex) << bit);
     }
 }
-

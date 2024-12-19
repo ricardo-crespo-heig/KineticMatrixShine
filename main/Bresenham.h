@@ -1,18 +1,13 @@
-/******************************************************************
- Created with PROGRAMINO IDE for Arduino - 15.03.2024 00:17:17
- Libraries   :
- Author      :
- Description :
-******************************************************************/
+ /************************************************************************************
+ * @file        Bresenham.h
+ * @project     KineticMatrixShine
+ * @author      Ricardo Crespo
+ * @date        06.12.2024
+ * @brief       Header of Bresenham Class
+ ************************************************************************************/
 
 #ifndef BRESENHAM_H
 #define BRESENHAM_H
-
-//#include <Arduino.h>
-//#include <Arduino.h>
-//#include "INIT.h"
-//#include <stdint.h>
-//#include <stdlib.h>
 
 struct MotorData {
     uint16_t currentIndex;
@@ -70,4 +65,4 @@ public:
     }
 };
 
-#endif // BRESENHAM_H
+#endif

@@ -1,15 +1,14 @@
-/******************************************************************
- Created with PROGRAMINO IDE for Arduino - 15.03.2024 00:17:00
- Project     :
- Libraries   :
- Author      :
- Description :
-******************************************************************/
+ /************************************************************************************
+ * @file        Init.cpp
+ * @project     KineticMatrixShine
+ * @author      Ricardo Crespo
+ * @date        19.12.2024
+ * @brief       Init functions
+ ************************************************************************************/
 
 #include <Arduino.h>
 #include "IO.h"
 #include "INIT.h"
-
 
 void InitTimer1(void)
 {

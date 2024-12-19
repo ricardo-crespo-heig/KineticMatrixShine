@@ -11,7 +11,7 @@
 #include "IO.h"
 #include "SEQUENCE.h"
 
-const uint16_t tbSteps[SEQUENCE_ROWS][NBR_MOTORS] =
+const int16_t tbSteps[SEQUENCE_ROWS][NBR_MOTORS] =
 {
   {50},
   {50},

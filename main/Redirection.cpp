@@ -17,7 +17,7 @@ Bresenham bresenham(BUFFER_SIZE);
 
 void Redirection(uint8_t matrix[][NBR_COL_MATRIX], uint16_t countInterCycle)
 {
-    uint8_t dirCW = false;
+    bool dirCW = false;
 
     if((tbSteps[countInterCycle][0]) > 0)
     {
@@ -36,8 +36,22 @@ void Redirection(uint8_t matrix[][NBR_COL_MATRIX], uint16_t countInterCycle)
     (tbSteps[countInterCycle]) ? FillColumn1(matrix, 6, 0) : FillColumn0(matrix, 6, 0);
     // STEPA1
     FillColumnBrenham(matrix, 6, 6, countInterCycle);
-    // SLEEPA1
-    (dirCW) ? FillColumn1(matrix, 6, 0) : FillColumn0(matrix, 6, 0);
+    // DIRA1
+    (dirCW) ? FillColumn1(matrix, 3, 3) : FillColumn0(matrix, 3, 3);
+
+    /*Serial.println("DIR " + String(dirCW));
+    Serial.println("CountInterCycle " + String(countInterCycle));
+    Serial.println("tbSteps[countInterCycle][0] " + String(tbSteps[countInterCycle][0]));
+
+    // Parcourir et afficher le tableau
+    for (int i = 0; i < BUFFER_SIZE; i++) {
+        for (int j = 0; j < NBR_COL_MATRIX; j++) {
+            Serial.print(matrix[i][j]);
+            Serial.print("\t"); // Tabulation entre les colonnes
+        }
+        Serial.println(); // Saut de ligne après chaque ligne
+        Serial.println(); // Saut de ligne après chaque ligne
+    }*/
 }
 
 // Fonction inline pour remplir une colonne

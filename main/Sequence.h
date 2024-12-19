@@ -9,6 +9,6 @@
 #ifndef SEQUENCE_H
 #define SEQUENCE_H
 
-extern const uint16_t tbSteps[SEQUENCE_ROWS][NBR_MOTORS];
+extern const int16_t tbSteps[SEQUENCE_ROWS][NBR_MOTORS];
 
 #endif

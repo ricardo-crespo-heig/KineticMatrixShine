@@ -25,7 +25,7 @@ uint8_t matrix1[BUFFER_SIZE][NBR_COL_MATRIX];
 
 void setup() {
 
-    Serial.begin(250000); // Initialiser la communication série
+    //Serial.begin(250000); // Initialiser la communication série
     InitIO();
       
     cli();  // Désactive les interruptions globales

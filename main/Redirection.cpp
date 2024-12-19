@@ -18,15 +18,24 @@ Bresenham bresenham(BUFFER_SIZE, NBR_MOTORS);
 
 void Redirection(uint8_t matrix[][NBR_COL_MATRIX], uint16_t countInterCycle)
 {
-    bool dirCW = false;
+    //bool dirCW = false;
+    bool tbDirCW[NBR_MOTORS]; 
 
-    if((tbSteps[countInterCycle][0]) > 0)
+    /*if((tbSteps[countInterCycle][0]) > 0)
     {
       dirCW = true;
     }
     else
     {
       dirCW = false;
+    }*/
+
+    for (uint8_t motorIndex = 0; motorIndex < NBR_MOTORS; motorIndex++) {
+        if (tbSteps[countInterCycle][motorIndex] > 0) {
+            tbDirCW[motorIndex] = true; // Moteur tourne dans le sens CW
+        } else {
+            tbDirCW[motorIndex] = false; // Moteur tourne dans le sens CCW
+        }
     }
 
     // SLEEPA2
@@ -38,7 +47,7 @@ void Redirection(uint8_t matrix[][NBR_COL_MATRIX], uint16_t countInterCycle)
     // STEPA1
     FillColumnBrenham(matrix, 0, 6, 6, countInterCycle);
     // DIRA1
-    (dirCW) ? FillColumn1(matrix, 3, 3) : FillColumn0(matrix, 3, 3);
+    (tbDirCW[0]) ? FillColumn1(matrix, 3, 3) : FillColumn0(matrix, 3, 3);
 
     /// MOTOR 1
     // SLEEPA2
@@ -46,14 +55,15 @@ void Redirection(uint8_t matrix[][NBR_COL_MATRIX], uint16_t countInterCycle)
     // STEPA2
     FillColumnBrenham(matrix, 1, 6, 5, countInterCycle);
     // DIRA2
-    (dirCW) ? FillColumn1(matrix, 6, 1) : FillColumn0(matrix, 6, 1);
+    (tbDirCW[1]) ? FillColumn1(matrix, 6, 1) : FillColumn0(matrix, 6, 1);
 
 
-    Serial.println("DIR " + String(dirCW));
+    /*Serial.println("DIR " + String(tbDirCW[0]));
+    Serial.println("DIR " + String(tbDirCW[1]));
     Serial.println("CountInterCycle " + String(countInterCycle));
     Serial.println("tbSteps[countInterCycle][0] " + String(tbSteps[countInterCycle][0]));
 
-    /*// Parcourir et afficher le tableau
+    // Parcourir et afficher le tableau
     for (int i = 0; i < BUFFER_SIZE; i++) {
         for (int j = 0; j < NBR_COL_MATRIX; j++) {
             Serial.print(matrix[i][j]);

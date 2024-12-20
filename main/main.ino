@@ -52,30 +52,13 @@ ISR(TIMER1_COMPA_vect)
     if(flipFlop)
     {
       flipFlop = false;
-      // Applique cet état sur les broches de step
-      // STEPA
-      PORTH &= ~(1 << BIT6);
-      PORTH &= ~(1 << BIT5);
-      PORTH &= ~(1 << BIT4);
-      PORTH &= ~(1 << BIT3);
 
-      // STEPB
-      PORTB &= ~(1 << BIT7);
-      PORTB &= ~(1 << BIT6);
-      PORTB &= ~(1 << BIT5);
-      PORTB &= ~(1 << BIT4);
-
-      // STEPC
-      PORTE &= ~(1 << BIT1);
-      PORTL &= ~(1 << BIT5);
-      PORTL &= ~(1 << BIT4);
-      PORTL &= ~(1 << BIT3);
-
-      // STEPD
-      PORTE &= ~(1 << BIT3);
-      PORTG &= ~(1 << BIT5);
-      PORTE &= ~(1 << BIT5);
-      PORTE &= ~(1 << BIT4);
+      // Applique un état bas sur toutes les pins step
+      PORTB &= ~STEP_PORTB;
+      PORTE &= ~STEP_PORTE;
+      PORTG &= ~STEP_PORTG;
+      PORTH &= ~STEP_PORTH;
+      PORTL &= ~STEP_PORTL;
 
     }
     else

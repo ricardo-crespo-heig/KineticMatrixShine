@@ -104,8 +104,11 @@
 #define SLEEPD3 48
 #define SLEEPD4 42
 
-#define STEPA1_BIT  1
-#define DIRA1_BIT   3
+#define STEP_PORTB 0xF0
+#define STEP_PORTE 0x2A
+#define STEP_PORTG 0x20
+#define STEP_PORTH 0x78
+#define STEP_PORTL 0x38
 
 extern void InitIO(void);
 

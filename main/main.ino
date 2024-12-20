@@ -22,6 +22,7 @@ uint8_t matrix1[BUFFER_SIZE][NBR_COL_MATRIX];
 void setup() {
 
     //Serial.begin(250000); // Initialiser la communication série
+    
     InitIO();
       
     cli();  // Désactive les interruptions globales
@@ -52,10 +53,29 @@ ISR(TIMER1_COMPA_vect)
     {
       flipFlop = false;
       // Applique cet état sur les broches de step
+      // STEPA
       PORTH &= ~(1 << BIT6);
       PORTH &= ~(1 << BIT5);
       PORTH &= ~(1 << BIT4);
       PORTH &= ~(1 << BIT3);
+
+      // STEPB
+      PORTB &= ~(1 << BIT7);
+      PORTB &= ~(1 << BIT6);
+      PORTB &= ~(1 << BIT5);
+      PORTB &= ~(1 << BIT4);
+
+      // STEPC
+      PORTE &= ~(1 << BIT1);
+      PORTL &= ~(1 << BIT5);
+      PORTL &= ~(1 << BIT4);
+      PORTL &= ~(1 << BIT3);
+
+      // STEPD
+      PORTE &= ~(1 << BIT3);
+      PORTG &= ~(1 << BIT5);
+      PORTE &= ~(1 << BIT5);
+      PORTE &= ~(1 << BIT4);
 
     }
     else

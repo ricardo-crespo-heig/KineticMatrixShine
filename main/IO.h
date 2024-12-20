@@ -27,6 +27,23 @@
 #define BIT6  6
 #define BIT7  7
 
+#define MOT0  0
+#define MOT1  1
+#define MOT2  2
+#define MOT3  3
+#define MOT4  4
+#define MOT5  5
+#define MOT6  6
+#define MOT7  7
+#define MOT8  8
+#define MOT9  9
+#define MOT10  10
+#define MOT11  11
+#define MOT12  12
+#define MOT13  13
+#define MOT14  14
+#define MOT15  15
+
 #define STEPA1 9  
 #define STEPA2 8  
 #define STEPA3 7  

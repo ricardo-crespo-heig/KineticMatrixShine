@@ -39,7 +39,7 @@ ISR(TIMER1_COMPA_vect)
 {
     static uint16_t countInter = 0;
     
-    static bool flipFlop = true;
+    static bool flipFlop = false;
 
     // Pointeur vers le tableau actif
     uint8_t (*activeBuffer)[NBR_COL_MATRIX] = flagInter ? matrix0 : matrix1;

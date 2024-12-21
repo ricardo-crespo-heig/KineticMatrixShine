@@ -13,7 +13,25 @@
 #include "BRESENHAM.h"
 #include "SEQUENCE.h"
 
-Bresenham bresenham(BUFFER_SIZE, NBR_MOTORS);
+Bresenham motors[NBR_MOTORS] = 
+{
+    Bresenham(BUFFER_SIZE),
+    Bresenham(BUFFER_SIZE),
+    Bresenham(BUFFER_SIZE),
+    Bresenham(BUFFER_SIZE),
+    Bresenham(BUFFER_SIZE),
+    Bresenham(BUFFER_SIZE),
+    Bresenham(BUFFER_SIZE),
+    Bresenham(BUFFER_SIZE),
+    Bresenham(BUFFER_SIZE),
+    Bresenham(BUFFER_SIZE),
+    Bresenham(BUFFER_SIZE),
+    Bresenham(BUFFER_SIZE),
+    Bresenham(BUFFER_SIZE),
+    Bresenham(BUFFER_SIZE),
+    Bresenham(BUFFER_SIZE),
+    Bresenham(BUFFER_SIZE)
+};
 
 void Redirection(uint8_t matrix[][NBR_COL_MATRIX], uint16_t countInterCycle)
 {
@@ -216,10 +234,10 @@ inline void FillColumn1(uint8_t matrix[][NBR_COL_MATRIX], uint8_t col, uint8_t b
 
 inline void FillColumnBrenham(uint8_t matrix[][NBR_COL_MATRIX], uint8_t motorIndex, uint8_t col, uint8_t bit, uint16_t countInterCycle)
 {
-    bresenham.init(tbSteps[countInterCycle][motorIndex], motorIndex);
+    motors[motorIndex].SetTarget(tbSteps[countInterCycle][motorIndex]); 
 
     for (int i = 0; i < BUFFER_SIZE; i++) 
     {
-        matrix[i][col] = (matrix[i][col] & ~(1 << bit)) | (bresenham.calculatePoint(motorIndex) << bit);
+        matrix[i][col] = (matrix[i][col] & ~(1 << bit)) | (motors[motorIndex].CalNextPoint() << bit);
     }
 }

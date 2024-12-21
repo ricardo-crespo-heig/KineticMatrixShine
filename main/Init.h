@@ -10,7 +10,7 @@
 #define INIT_H
 
 #define NBR_COL_MATRIX  8
-#define BUFFER_SIZE     100
+#define BUFFER_SIZE     200
 
 #define SEQUENCE_ROWS   40
 #define NBR_MOTORS      16

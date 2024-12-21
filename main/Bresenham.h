@@ -32,6 +32,7 @@ public:
         }
     }
 
+    // TODO : Déplacer le code utile dans calculatePoint
     // Initialise les variables pour un moteur donné
     inline void init(int16_t totalSteps, uint8_t motorIndex) {
         if (motorIndex >= numMotors) return; // Vérifie que l'index est valide

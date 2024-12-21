@@ -26,26 +26,6 @@ void InitTimer1(void)
     TIMSK1 |= (1 << OCIE1A);
 }
 
-/*void InitTimer1(void)
-{
-    // TIMER 1 for interrupt frequency 2000 Hz:
-    TCCR1A = 0; // set entire TCCR1A register to 0
-    TCCR1B = 0; // same for TCCR1B
-    TCNT1  = 0; // initialize counter value to 0
-    // set compare match register for 2000 Hz increments
-    // Formula: OCR1A = (16,000,000 / (Prescaler * Target Frequency)) - 1
-    // Using a prescaler of 8:
-    // OCR1A = (16,000,000 / (8 * 2000)) - 1 = 999
-    OCR1A = 999;
-    // turn on CTC mode
-    TCCR1B |= (1 << WGM12);
-    // Set CS12, CS11 and CS10 bits for prescaler of 8
-    TCCR1B |= (0 << CS12) | (1 << CS11) | (0 << CS10);
-    // enable timer compare interrupt
-    TIMSK1 |= (1 << OCIE1A);
-}*/
-
-
 void DisableSleep(void)
 {
     digitalWrite(SLEEPA1, HIGH);

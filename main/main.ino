@@ -13,11 +13,9 @@
 #include "REDIRECTION.h"
 
 volatile bool flagInter = true;
-volatile bool oneTimeEveryTime = true;
-uint16_t countInterCycle = 0;
 
-uint8_t matrix0[BUFFER_SIZE][NBR_COL_MATRIX];
-uint8_t matrix1[BUFFER_SIZE][NBR_COL_MATRIX];
+volatile uint8_t matrix0[BUFFER_SIZE][NBR_COL_MATRIX];
+volatile uint8_t matrix1[BUFFER_SIZE][NBR_COL_MATRIX];
 
 void setup() {
 
@@ -29,9 +27,7 @@ void setup() {
 
     InitTimer1();
 
-    Redirection(matrix0, countInterCycle);
-
-    Redirection(matrix1, countInterCycle);
+    Redirection(matrix0, 0);
 
     DisableSleep();
 
@@ -81,23 +77,26 @@ ISR(TIMER1_COMPA_vect)
     if(countInter >= (BUFFER_SIZE))
     {
         countInter = 0;
-        countInterCycle++;
-        oneTimeEveryTime = true;
-        flagInter = !flagInter;           // Signale que 100 ms sont écoulées
-    }
-
-    if(countInterCycle >= SEQUENCE_ROWS)
-    {
-        countInterCycle = 0;
+        flagInter = !flagInter;           // Signale que 10 ms sont écoulées
     }
 }
 
 void loop() 
 {
-    if (oneTimeEveryTime) 
-    {
-        oneTimeEveryTime = false;
+    static bool oldFlagInter = false;
+    static uint16_t countInterCycle = 1;
 
-        Redirection(flagInter ? matrix0 : matrix1, countInterCycle);
+    if (flagInter != oldFlagInter) 
+    {
+        oldFlagInter = flagInter;
+
+        countInterCycle++;
+
+        if(countInterCycle >= SEQUENCE_ROWS)
+        {
+            countInterCycle = 0;
+        }
+
+        Redirection(!flagInter ? matrix0 : matrix1, countInterCycle);
     }
 }

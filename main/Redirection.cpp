@@ -72,11 +72,11 @@ void Redirection(uint8_t matrix[][NBR_COL_MATRIX], uint16_t countInterCycle)
     // MOTOR 4
     actualMotor = MOT4;
     // SLEEPB1
-    (tbSteps[countInterCycle][actualMotor]) ? FillColumn1(matrix, MPORTG, BIT0) : FillColumn0(matrix, MPORTG, BIT0);
+    (tbSteps[countInterCycle][actualMotor]) ? FillColumn1(matrix, MPORTG, BIT1) : FillColumn0(matrix, MPORTG, BIT1);
     // STEPB1
     FillColumnBrenham(matrix, actualMotor, MPORTB, BIT7, countInterCycle);
     // DIRB1
-    (tbDirCW[actualMotor]) ? FillColumn1(matrix, MPORTG, BIT1) : FillColumn0(matrix, MPORTG, BIT1);
+    (tbDirCW[actualMotor]) ? FillColumn1(matrix, MPORTG, BIT0) : FillColumn0(matrix, MPORTG, BIT0);
 
     // MOTOR 5
     actualMotor = MOT5;
